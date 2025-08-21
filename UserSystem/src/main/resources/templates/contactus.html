@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <link rel="stylesheet" th:href="@{/style22.css}">
+</head>
+<body class="with-header">
+
+<!-- ✅ Header -->
+<div class="rectangle-header">
+    <a href="/dashboard" class="header-link">Home</a>
+</div>
+
+<!-- ✅ Page Content -->
+<div class="page-content">
+    <div class="main-box">
+        <h1>Contact Us</h1>
+        <p style="margin-bottom: 25px; color: #666;">
+            We'd love to hear from you! Whether you have a question, suggestion, or need help, feel free to reach out using the form below.
+        </p>
+
+        <form th:action="@{/send-message}" method="post">
+            <input type="text" name="name" placeholder="Your Name" required 
+                   style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc;">
+            
+            <input type="email" name="email" placeholder="Your Email" required 
+                   style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc;">
+            
+            <textarea name="message" placeholder="Your Message" rows="5" required 
+                      style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
+            
+            <button type="submit">Send Message</button>
+        </form>
+
+        <!-- ✅ Contact Details -->
+        <div style="margin-top: 30px; font-size: 15px; color: #555;">
+            <p><strong>Email:</strong> info@skyfitguide.com</p>
+            <p><strong>Phone:</strong> +962 79 123 4567</p>
+            <p><strong>Location:</strong> Sky Gym – Al-shahid Street, Amman, Jordan</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

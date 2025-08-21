@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security"> 
+<head>
+  <meta charset="UTF-8" />
+  <title>Healthy Meals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .meal-card:hover .nutrition-details {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+    }
+
+    /* active tab */
+    .tab-active {
+      background: linear-gradient(135deg, #ffce57, #ffab3c);
+      color: #1a2c47 !important;
+      box-shadow: 0 8px 24px -4px rgba(255, 206, 87, 0.6);
+    }
+
+    /* smooth hide/show */
+    .meal-card {
+      transition: opacity .3s ease, transform .3s ease;
+    }
+    .archived {
+  opacity: 0.5;
+  position: relative;
+}
+
+.archived::after {
+  content: "Archived";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+    
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="gradient-bg text-white font-medium">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none">
+            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L9 6l8.24 8.24z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16.95 7.05a6 6 0 0 0-8.48 8.48L4 20l4.47-4.47a6 6 0 0 0 8.48-8.48z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h1 class="text-xl font-bold">SkyGym</h1>
+        </div>
+
+        <nav class="flex items-center space-x-6">
+          <a href="/dashboard" class="font-medium hover:text-gray-200 transition">HomePage</a>
+          <form action="/logout" method="post">
+            <button type="submit" class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-100 transition text-sm">Logout</button>
+          </form>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="flex justify-center mt-8 mb-4">
+    <div class="flex space-x-6 bg-white rounded-lg p-2 shadow-md">
+      <button class="filter-tab tab-active px-4 py-2 rounded-md font-medium transition-all" data-filter="all">All</button>
+      <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="vegan">Vegan</button>
+      <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="high-protein">High-Protein</button>
+      <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="carbs">Carbs</button>
+      <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="salads">Salads</button>
+    </div>
+  </div>
+
+  <h1 class="text-center text-3xl font-bold mt-2 text-blue-800">Suggested Healthy Meals</h1>
+
+<div class="max-w-7xl mx-auto px-6 py-8">
+  <div id="meals-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+    <!-- 1: High-Protein -->
+    <div class="meal-card relative bg-white rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105" data-category="high-protein">
+      <img th:src="@{/images/steak.png}" alt="Steak" class="w-full h-48 object-cover" />
+      <div class="p-4 text-center font-semibold text-lg">Flank Steak Fajita</div>
+      <div class="nutrition-details absolute bottom-0 left-0 right-0 bg-white bg-opacity-95 text-center text-sm p-4 opacity-0 transform translate-y-4 transition duration-300">
+        Calories: 350 kcal<br>Protein: 30g<br>Carbs: 10g<br>Fat: 12g
+      </div>
+
+      <!-- زر الأرشيف يظهر فقط للمستخدمين بـ role staff -->
+      <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+    </div>
+
+    <!-- 2: High-Protein -->
+    <div class="meal-card relative bg-white rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105" data-category="high-protein">
+      <img th:src="@{/images/shrimp.png}" alt="Shrimp" class="w-full h-48 object-cover" />
+      <div class="p-4 text-center font-semibold text-lg">Blackened Shrimp</div>
+      <div class="nutrition-details absolute bottom-0 left-0 right-0 bg-white bg-opacity-95 text-center text-sm p-4 opacity-0 transform translate-y-4 transition duration-300">
+        Calories: 320 kcal<br>Protein: 28g<br>Carbs: 8g<br>Fat: 10g
+      </div>
+
+      <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+    </div>
+
+    <!-- بقية الكاردات بنفس الطريقة -->
+    <div class="meal-card relative bg-white rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105" data-category="high-protein">
+      <img th:src="@{/images/chicken.png}" alt="Chicken Tinga" class="w-full h-48 object-cover" />
+      <div class="p-4 text-center font-semibold text-lg">Chicken Tinga</div>
+      <div class="nutrition-details absolute bottom-0 left-0 right-0 bg-white bg-opacity-95 text-center text-sm p-4 opacity-0 transform translate-y-4 transition duration-300">
+        Calories: 340 kcal<br>Protein: 32g<br>Carbs: 9g<br>Fat: 11g
+      </div>
+      <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+    </div>
+
+    <!-- كرر الزر داخل باقي الكاردات حسب الحاجة -->
+
+    <!-- الكاردات الديناميكية -->
+    <div th:each="meal : ${meals}" class="meal-card relative bg-white rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105"
+         th:attr="data-category=${meal.category.toLowerCase()}">
+      <img th:src="@{${meal.image}}" alt="Meal Image" class="w-full h-48 object-cover" />
+      <div class="p-4 text-center font-semibold text-lg" th:text="${meal.name}">Meal Name</div>
+      <div class="nutrition-details absolute bottom-0 left-0 right-0 bg-white bg-opacity-95 text-center text-sm p-4 opacity-0 transform translate-y-4 transition duration-300">
+        Calories: <span th:text="${meal.calories}">0</span> kcal<br>
+        Protein: <span th:text="${meal.protein}">0</span>g<br>
+        Carbs: <span th:text="${meal.carbs}">0</span>g<br>
+        Fat: <span th:text="${meal.fat}">0</span>g
+      </div>
+      <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <script>
+  // Filtering tabs functionality
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const mealCards = document.querySelectorAll('.meal-card');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => {
+        t.classList.remove('tab-active');
+        t.classList.add('text-gray-600');
+      });
+      tab.classList.add('tab-active');
+      tab.classList.remove('text-gray-600');
+
+      const filter = tab.getAttribute('data-filter');
+      mealCards.forEach(card => {
+        if (filter === 'all' || card.dataset.category.includes(filter)) {
+          card.style.display = 'block';
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          }, 0);
+        } else {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            card.style.display = 'none';
+          }, 300);
+        }
+      });
+    });
+  });
+
+  // Archive toggle
+  document.addEventListener("DOMContentLoaded", function () {
+    const archiveButtons = document.querySelectorAll(".archive-btn");
+
+    archiveButtons.forEach(button => {
+      button.addEventListener("click", function () {
+        const card = button.closest(".meal-card");
+        const isArchived = card.classList.contains("archived");
+
+        if (isArchived) {
+          card.classList.remove("archived");
+          button.textContent = "Archive";
+        } else {
+          card.classList.add("archived");
+          button.textContent = "Unarchive";
+        }
+
+        // Optional backend call:
+        // sendArchiveStatus(card.dataset.mealId, !isArchived);
+      });
+    });
+  });
+</script>
+
+
+</body>
+</html>

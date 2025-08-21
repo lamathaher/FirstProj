@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+      lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Gym Classes - Workout Sessions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8fafc;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.class-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.class-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+.class-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.class-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  margin-bottom: 0.25rem;
+}
+
+.class-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+}
+
+.class-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  height: 260px;
+  min-height: 260px;
+  transition: opacity 0.3s ease;
+}
+
+.class-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.class-info {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.96);
+  padding: 1rem;
+  z-index: 5;
+  transition: all 0.3s ease;
+  transform: translateY(20px);
+  border-top: 2px solid #1a2c47;
+  min-height: 100px;
+}
+
+.class-card:hover .class-info {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.card:hover .class-info {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* زر الأرشفة */
+.archive-btn {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background-color: #1f2937;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  z-index: 30; /* فوق الضباب */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.archive-btn:hover {
+  background-color: #374151;
+}
+
+/* الضباب */
+.class-card.archived::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(128, 128, 128, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 10; /* خلف الزر */
+}
+
+/* كلمة Archived */
+.class-card.archived::after {
+  content: "Archived";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  z-index: 20;
+}
+
+    
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen">
+
+  <!-- Unified Header -->
+<header class="gradient-bg text-white">
+  <div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <svg class="w-10 h-10 ml-2" viewBox="0 0 24 24" fill="none">
+          <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L9 6l8.24 8.24z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M16.95 7.05a6 6 0 0 0-8.48 8.48L4 20l4.47-4.47a6 6 0 0 0 8.48-8.48z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <h1 class="text-2xl font-bold">SkyGym</h1>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex space-x-6 flex-row-reverse">
+        <a href="/dashboard" class="font-medium hover:text-gray-200 transition">HomePage</a>
+       
+      </nav>
+
+      <!-- Logout Button -->
+      <div class="flex items-center">
+        <form action="/logout" method="post" class="ml-4">
+          <button type="submit" class="font-medium hover:text-gray-200 transition">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Page Content -->
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Gym Classes</h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Join our exciting workout sessions led by certified trainers. Choose from a variety of classes designed for all fitness levels.
+      </p>
+    </header>
+            
+            <!-- Filter Tabs -->
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-6 bg-white rounded-lg p-2 shadow-md">
+                    <button class="filter-tab tab-active px-4 py-2 rounded-md font-medium transition-all" data-filter="all">All Classes</button>
+                    <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="cardio">Cardio</button>
+                    <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="strength">Strength</button>
+                    <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="flexibility">Flexibility</button>
+                    <button class="filter-tab px-4 py-2 rounded-md font-medium text-gray-600 hover:text-blue-600 transition-all" data-filter="water">Water</button>
+                </div>
+            </div>
+            
+            <!-- Classes Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Swimming Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="water">
+                    <div class="class-background" style="background-image: url('https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Swimming</h3>
+                        <p class="class-subtitle">Full body aquatic workout</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Swimming Class</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Monday, Wednesday, Friday - 7:00 AM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Sarah Johnson</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 45 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 12 participants</span>
+                        </div>
+                    </div>
+                     <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Cardio Blast Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="cardio">
+                    <div class="class-background" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGOoc6uXOqzhxHPKZgjCMlTwDRgn-HqiqXWw&s');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-intermediate">Intermediate</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Cardio Blast</h3>
+                        <p class="class-subtitle">High-intensity cardio workout</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Cardio Blast</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Tuesday, Thursday - 6:00 PM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Mike Rodriguez</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 30 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 20 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Zumba Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="cardio">
+                    <div class="class-background" style="background-image: url('https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Zumba</h3>
+                        <p class="class-subtitle">Dance fitness party</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Zumba Dance</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Monday, Wednesday - 7:30 PM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Maria Santos</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 50 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 25 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Yoga Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="flexibility">
+                <div class="class-background" style="background-image: url('https://media.istockphoto.com/id/1483989816/photo/adult-arab-male-with-a-ponytail-meditating-in-a-yoga-class.jpg?s=612x612&w=0&k=20&c=FTkO8dit_ZWB_9mUk2bmkELm2mpC-NqH82nCmK1Wx6M=');"></div>
+                
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-beginner">Beginner</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Yoga</h3>
+                        <p class="class-subtitle">Mind-body connection</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Hatha Yoga</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Daily - 8:00 AM & 6:00 PM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Emma Thompson</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 60 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 15 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- CrossFit Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="strength">
+                    <div class="class-background" style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-advanced">Advanced</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">CrossFit</h3>
+                        <p class="class-subtitle">Functional fitness training</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">CrossFit WOD</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Monday to Friday - 5:30 AM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Jake Wilson</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 45 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 10 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Pilates Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="flexibility">
+                    <div class="class-background" style="background-image: url('https://static.wixstatic.com/media/bea9da_c59caa6ef3ba46cc9f00fc22fc7becdf~mv2.jpeg/v1/fill/w_640,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/bea9da_c59caa6ef3ba46cc9f00fc22fc7becdf~mv2.jpeg');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-intermediate">Intermediate</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Pilates</h3>
+                        <p class="class-subtitle">Core strength & flexibility</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Pilates Core</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Tuesday, Thursday, Saturday - 9:00 AM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Lisa Chen</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 55 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 12 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Spinning Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="cardio">
+                    <div class="class-background" style="background-image: url('https://hips.hearstapps.com/hmg-prod/images/group-of-fit-people-working-out-on-spinning-class-royalty-free-image-916146326-1541706732.jpg?crop=0.88847xw:1xh;center,top&resize=1200:*');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-intermediate">Intermediate</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Spinning</h3>
+                        <p class="class-subtitle">Indoor cycling workout</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Spin Cycle</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Monday, Wednesday, Friday - 6:30 PM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: David Park</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 40 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 18 participants</span>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+                </div>
+                
+                <!-- Strength Training Class -->
+                <div class="card class-card bg-white rounded-xl shadow-md overflow-hidden" data-category="strength">
+                    <div class="class-background" style="background-image: url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                    <div class="class-overlay"></div>
+                    <div class="difficulty-badge difficulty-intermediate">Intermediate</div>
+                    
+                    <div class="class-content">
+                        <h3 class="class-name">Strength Training</h3>
+                        <p class="class-subtitle">Build muscle & power</p>
+                    </div>
+                    
+                    <div class="class-info">
+                        <h3 class="class-title">Strength & Power</h3>
+                        <div class="class-detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Tuesday, Thursday, Saturday - 7:00 PM</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-user"></i>
+                            <span>Coach: Alex Turner</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Duration: 50 minutes</span>
+                        </div>
+                        <div class="class-detail">
+                            <i class="fas fa-users"></i>
+                            <span>Max: 8 participants</span>
+                        </div>
+                    </div>
+                </div>
+                <div sec:authorize="hasRole('staff')">
+        <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
+          Archive
+        </button>
+      </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="mt-12 text-center">
+                <div class="bg-white rounded-xl shadow-md p-8 max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Ready to Start Your Fitness Journey?</h2>
+                    <p class="text-gray-600 mb-6">Join our community of fitness enthusiasts and achieve your health goals with expert guidance.</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button class="btn-primary px-8 py-3 rounded-lg text-white font-medium">
+                            <i class="fas fa-calendar-plus mr-2"></i>
+                            View Full Schedule
+                        </button>
+                        <button class="btn-secondary px-8 py-3 rounded-lg text-white font-medium">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+      
+        </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            const classCards = document.querySelectorAll('.class-card');
+            
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const filter = this.dataset.filter;
+                    
+                    // Update active tab
+                    filterTabs.forEach(t => {
+                        t.classList.remove('tab-active');
+                        t.classList.add('text-gray-600');
+                    });
+                    this.classList.add('tab-active');
+                    this.classList.remove('text-gray-600');
+                    
+                    // Filter cards
+                    classCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.category === filter) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1)';
+                            }, 50);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+            
+            // Add smooth animations on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Initially hide cards for animation
+            classCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+        });
+        document.addEventListener("click", function (e) {
+        	  const btn = e.target.closest(".archive-btn");
+        	  if (!btn) return; // مش زر أرشفة
+
+        	  const card = btn.closest(".class-card");
+        	  if (!card) return;
+
+        	  // تبديل حالة الأرشفة
+        	  const isArchived = card.classList.toggle("archived");
+        	  btn.textContent = isArchived ? "Unarchive" : "Archive";
+        	});
+
+
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'966d544602115cd1',t:'MTc1Mzc5OTU4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

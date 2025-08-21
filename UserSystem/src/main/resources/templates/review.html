@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Reviews</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --radius: 1rem;
+      --shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.35);
+      --transition: 0.35s cubic-bezier(.25,.8,.25,1);
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+      color: #f0f5fa;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+    h2::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #ffce57;
+    }
+
+    .reviews-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      margin-top: 1rem;
+    }
+
+    .review-card {
+  position: relative;
+  padding: 1.25rem 1rem 1.5rem;
+  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: var(--transition);
+  color: #1f1f1f; /* make card text dark */
+}
+
+    .review-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.review-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #111; /* ensure title is solid dark */
+}
+
+    .stars {
+      display: inline-flex;
+      gap: 2px;
+    }
+
+    .star {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      position: relative;
+    }
+    .star svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: #ffce57;
+      filter: drop-shadow(0 0 4px rgba(255, 206, 87, 0.7));
+    }
+
+    .review-content {
+      flex: 1;
+      margin: 0;
+      line-height: 1.4;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+       color: #222; /* body of review */
+    }
+
+   .meta {
+  font-size: 0.75rem;
+  color: #555; /* dark but subtle */
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+
+    .no-reviews {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #1f1f1f;
+}
+.badge {
+  background: #f0f0f0;
+  color: #333;
+}
+
+    .no-reviews span {
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    
+    @media (max-width: 640px) {
+      h2 { font-size: 1.75rem; }
+    }
+    .controls {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.55rem 1rem;
+  background: linear-gradient(135deg, #ffce57, #ffab3c);
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1a2c47;
+  transition: transform .25s ease, filter .25s ease;
+  box-shadow: 0 12px 28px -4px rgba(255, 206, 87, 0.5);
+  font-size: 0.9rem;
+}
+
+#back-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+#back-btn:active {
+  transform: translateY(1px);
+}
+#back-btn:focus {
+  outline: 2px solid rgba(255, 206, 87, 0.9);
+  outline-offset: 2px;
+}
+header {
+  position: fixed;       /* يخلي العنصر ثابت */
+  top: 1rem;             /* مسافة من الأعلى */
+  left: 1rem;            /* مسافة من اليسار */
+  z-index: 1000;         /* فوق أي عناصر ثانية */
+}
+    
+  </style>
+</head>
+   <header>
+     <div class="controls">
+  <button id="back-btn" aria-label="Go back">
+    <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" style="margin-right:6px; vertical-align:middle;">
+      <path fill="currentColor" d="M9.7 4.3a1 1 0 0 0-1.4 1.4L11.58 9H4a1 1 0 1 0 0 2h7.58l-3.28 3.28a1 1 0 1 0 1.44 1.4l5-5a1 1 0 0 0 0-1.4l-5-5z"/>
+    </svg>
+    Back
+  </button>
+</div>
+   </header>
+<body>
+  <div class="wrapper">
+    <h2>My Reviews</h2>
+    <div id="reviews-list" class="reviews-grid"></div>
+  
+    
+  </div>
+
+  <script>
+    const reviews = JSON.parse(localStorage.getItem("reviews") || "[]");
+    const container = document.getElementById("reviews-list");
+
+    if (reviews.length === 0) {
+      container.innerHTML = `
+        <div class="no-reviews">
+          <div class="badge">No Reviews Yet</div>
+          <div>Looks like you haven't submitted any reviews. Go ahead and share your experience!</div>
+        </div>
+      `;
+    } else {
+      reviews.forEach((review, index) => {
+        const card = document.createElement("div");
+        card.className = "review-card";
+
+        // build stars if rating exists (assuming rating 1..5)
+        let starsHtml = "";
+        if (review.rating != null) {
+          const full = Math.max(0, Math.min(5, Math.floor(review.rating)));
+          for (let i = 0; i < full; i++) {
+            starsHtml += `
+              <span class="star" aria-label="star">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 1.5l2.94 5.95 6.56.95-4.75 4.63 1.12 6.53L10 16.5l-5.87 3.06 1.12-6.53L.5 8.4l6.56-.95L10 1.5z"/>
+                </svg>
+              </span>`;
+          }
+        }
+
+        card.innerHTML = `
+          <div class="review-title">
+            ${escapeHTML(review.title)}
+            ${starsHtml ? `<div class="stars">${starsHtml}</div>` : ""}
+          </div>
+          <p class="review-content">${escapeHTML(review.content)}</p>
+          <div class="meta">
+            <div>Created at: ${new Date(review.createdAt).toLocaleString()}</div>
+            <div class="badge">#${index + 1}</div>
+          </div>
+        `;
+
+        container.appendChild(card);
+
+        // staggered reveal
+        setTimeout(() => {
+          card.classList.add("visible");
+        }, 100 * index);
+      });
+    }
+
+    function escapeHTML(str) {
+      if (!str) return "";
+      return str.replaceAll('&', "&amp;")
+                .replaceAll('<', "&lt;")
+                .replaceAll('>', "&gt;")
+                .replaceAll('"', "&quot;")
+                 .replaceAll("\'", "&#39;");
+    }
+    
+    
+    document.getElementById("back-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (history.length > 1) {
+          history.back();
+        } else {
+          // fallback لو ما في تاريخ رجعة
+          window.location.href = "/";
+        }
+      });
+  </script>
+</body>
+</html>

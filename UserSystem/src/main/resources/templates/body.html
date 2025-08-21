@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Dashboard - Body Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary {
+            background-color: #1e40af;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e3a8a;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #64748b;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #475569;
+            transform: translateY(-2px);
+        }
+        
+        .tab-active {
+            color: #1e40af;
+            border-bottom: 3px solid #1e40af;
+        }
+        .gradient-bg {
+      background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+    }
+    </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="gradient-bg text-white">
+    <div class="container mx-auto px-4 py-6">
+      <div class="flex justify-between items-center">
+
+        <!-- Logo -->
+        <div class="flex items-center">
+          <svg class="w-10 h-10 ml-2" viewBox="0 0 24 24" fill="none">
+            <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L9 6l8.24 8.24z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16.95 7.05a6 6 0 0 0-8.48 8.48L4 20l4.47-4.47a6 6 0 0 0 8.48-8.48z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <h1 class="text-2xl font-bold">SkyGym</h1>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex space-x-6 flex-row-reverse">
+          <a href="/dashboard" class="font-medium hover:text-gray-200 transition">HomePage</a>
+        </nav>
+
+        <!-- Logout Button -->
+        <div class="flex items-center">
+          <form action="/logout" method="post" class="ml-4">
+            <button type="submit" class="font-medium hover:text-gray-200 transition">Logout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Daily Calorie Card -->
+                <div class="card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Daily Calories</h2>
+                        <span class="text-sm text-blue-600 cursor-pointer hover:underline" onclick="recalculateCalories()">Recalculate</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="relative">
+                            <svg class="progress-ring" width="150" height="150">
+                                <circle class="progress-ring-circle-bg" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="65" cx="75" cy="75"></circle>
+                                <circle id="calorieRing" class="progress-ring-circle" stroke="#1e40af" stroke-width="8" fill="transparent" r="65" cx="75" cy="75" stroke-dasharray="408" stroke-dashoffset="102"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="calorieCount" class="text-3xl font-bold text-gray-800">2,100</span>
+                                <span class="text-sm text-gray-500">calories/day</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-blue-50 rounded-lg p-2">
+                            <p class="text-xs text-gray-500">Protein</p>
+                            <p id="proteinGrams" class="font-semibold text-gray-800">131g</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-2">
+                            <p class="text-xs text-gray-500">Carbs</p>
+                            <p id="carbsGrams" class="font-semibold text-gray-800">236g</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-2">
+                            <p class="text-xs text-gray-500">Fat</p>
+                            <p id="fatGrams" class="font-semibold text-gray-800">58g</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">Activity Level</span>
+                            <span id="activityLevel" class="text-blue-600 font-medium">Moderate</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Goal</span>
+                            <span id="calorieGoal" class="text-blue-600 font-medium">Maintain Weight</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- BMI Card -->
+                <div class="card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Body Mass Index</h2>
+                        <span class="text-sm text-blue-600 cursor-pointer hover:underline" onclick="showBmiCalculator()">Calculate</span>
+                    </div>
+                    
+                    <div class="flex justify-center mb-6">
+                        <div class="w-full max-w-xs">
+                            <div class="relative pt-4">
+                                <div class="flex mb-2">
+                                    <div class="flex-1"></div>
+                                    <div class="flex-1 text-center">
+                                        <span class="text-xs text-gray-500">Underweight</span>
+                                    </div>
+                                    <div class="flex-1 text-center">
+                                        <span class="text-xs text-gray-500">Normal</span>
+                                    </div>
+                                    <div class="flex-1 text-center">
+                                        <span class="text-xs text-gray-500">Overweight</span>
+                                    </div>
+                                    <div class="flex-1 text-center">
+                                        <span class="text-xs text-gray-500">Obese</span>
+                                    </div>
+                                    <div class="flex-1"></div>
+                                </div>
+                                <div class="overflow-hidden h-3 mb-1 text-xs flex rounded-full bg-gray-200">
+                                    <div class="bg-blue-200 w-1/4"></div>
+                                    <div class="bg-green-400 w-1/4"></div>
+                                    <div class="bg-yellow-400 w-1/4"></div>
+                                    <div class="bg-red-400 w-1/4"></div>
+                                </div>
+                                <div class="relative h-6">
+                                    <div id="bmiMarker" class="absolute w-4 h-4 bg-blue-700 rounded-full -mt-2 -ml-2" style="left: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <span id="bmiValue" class="text-4xl font-bold text-gray-800">22.5</span>
+                        <p id="bmiCategory" class="text-green-500 font-medium mt-1">Normal Weight</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-blue-50 rounded-lg p-3">
+                            <p class="text-xs text-gray-500">Height</p>
+                            <p id="heightValue" class="font-semibold text-gray-800">175 cm</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-3">
+                            <p class="text-xs text-gray-500">Weight</p>
+                            <p id="weightValue" class="font-semibold text-gray-800">69 kg</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Weight Input Card -->
+                <div class="card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Log Weight</h2>
+                        <span class="text-sm text-blue-600 cursor-pointer hover:underline" id="clearWeightBtn">Clear History</span>
+                    </div>
+                    
+                    <form id="weightForm" class="mb-6">
+                        <div class="mb-4">
+                            <label for="weightInput" class="block text-sm font-medium text-gray-700 mb-1">Current Weight</label>
+                            <div class="flex">
+                                <input type="number" id="weightInput" step="0.1" min="30" max="300" placeholder="Enter weight" class="input-focus flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none">
+                                <select id="weightUnit" class="input-focus px-2 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg focus:outline-none">
+                                    <option value="kg">kg</option>
+                                    <option value="lbs">lbs</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="weightDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" id="weightDate" class="input-focus w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                        </div>
+                        
+                        <button type="submit" class="btn-primary w-full py-2 px-4 rounded-lg text-white font-medium flex items-center justify-center">
+                            <i class="fas fa-save mr-2"></i> Save Weight
+                        </button>
+                    </form>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">Recent Entries</h3>
+                        <div id="recentWeights" class="max-h-32 overflow-y-auto">
+                            <!-- Recent weight entries will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weight Tracking Chart -->
+            <div class="card bg-white rounded-xl shadow-md p-6 border border-gray-100 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800">Weight Progress</h2>
+                    <div class="flex space-x-2">
+                        <button class="time-filter tab-active px-3 py-1 text-sm font-medium" data-period="week">Week</button>
+                        <button class="time-filter px-3 py-1 text-sm font-medium text-gray-600" data-period="month">Month</button>
+                        <button class="time-filter px-3 py-1 text-sm font-medium text-gray-600" data-period="year">Year</button>
+                        <button class="time-filter px-3 py-1 text-sm font-medium text-gray-600" data-period="all">All</button>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="weightChart"></canvas>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-xs text-gray-500">Starting Weight</p>
+                        <p id="startWeight" class="text-xl font-bold text-gray-800">72.0 kg</p>
+                        <p class="text-xs text-gray-500 mt-1">3 months ago</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-xs text-gray-500">Current Weight</p>
+                        <p id="currentWeight" class="text-xl font-bold text-gray-800">69.0 kg</p>
+                        <p class="text-xs text-gray-500 mt-1">Today</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-xs text-gray-500">Weight Change</p>
+                        <p id="weightChange" class="text-xl font-bold text-green-600">-3.0 kg</p>
+                        <p class="text-xs text-gray-500 mt-1">-4.2%</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-xs text-gray-500">Target Weight</p>
+                        <p id="targetWeight" class="text-xl font-bold text-gray-800">67.0 kg</p>
+                        <p id="targetRemaining" class="text-xs text-blue-600 mt-1">2.0 kg to go</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- BMI Calculator Modal -->
+    <div id="bmiModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Calculate BMI</h3>
+                <button id="closeBmiModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="bmiForm">
+                <div class="mb-4">
+                    <label for="heightInput" class="block text-sm font-medium text-gray-700 mb-1">Height</label>
+                    <div class="flex">
+                        <input type="number" id="heightInput" step="0.1" min="100" max="250" placeholder="Enter height" class="input-focus flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none">
+                        <select id="heightUnit" class="input-focus px-2 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg focus:outline-none">
+                            <option value="cm">cm</option>
+                            <option value="ft">ft</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="bmiWeightInput" class="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+                    <div class="flex">
+                        <input type="number" id="bmiWeightInput" step="0.1" min="30" max="300" placeholder="Enter weight" class="input-focus flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none">
+                        <select id="bmiWeightUnit" class="input-focus px-2 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg focus:outline-none">
+                            <option value="kg">kg</option>
+                            <option value="lbs">lbs</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" id="cancelBmiBtn" class="btn-secondary flex-1 py-2 px-4 rounded-lg text-white font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary flex-1 py-2 px-4 rounded-lg text-white font-medium">
+                        Calculate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Calorie Calculator Modal -->
+    <div id="calorieModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Calculate Daily Calories</h3>
+                <button id="closeCalorieModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="calorieForm">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="calorieAge" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                        <input type="number" id="calorieAge" min="15" max="100" placeholder="Years" class="input-focus w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="calorieGender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                        <select id="calorieGender" class="input-focus w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="calorieHeight" class="block text-sm font-medium text-gray-700 mb-1">Height</label>
+                        <div class="flex">
+                            <input type="number" id="calorieHeight" step="0.1" min="100" max="250" placeholder="Height" class="input-focus flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none">
+                            <span class="px-2 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg">cm</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="calorieWeight" class="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+                        <div class="flex">
+                            <input type="number" id="calorieWeight" step="0.1" min="30" max="300" placeholder="Weight" class="input-focus flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none">
+                            <span class="px-2 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg">kg</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="calorieActivity" class="block text-sm font-medium text-gray-700 mb-1">Activity Level</label>
+                    <select id="calorieActivity" class="input-focus w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                        <option value="1.2">Sedentary (little or no exercise)</option>
+                        <option value="1.375">Lightly active (light exercise 1-3 days/week)</option>
+                        <option value="1.55" selected>Moderately active (moderate exercise 3-5 days/week)</option>
+                        <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                        <option value="1.9">Extra active (very hard exercise & physical job)</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="calorieGoalSelect" class="block text-sm font-medium text-gray-700 mb-1">Goal</label>
+                    <select id="calorieGoalSelect" class="input-focus w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none">
+                        <option value="maintain">Maintain weight</option>
+                        <option value="mildLoss">Mild weight loss (0.25 kg/week)</option>
+                        <option value="loss">Weight loss (0.5 kg/week)</option>
+                        <option value="extremeLoss">Extreme weight loss (1 kg/week)</option>
+                        <option value="mildGain">Mild weight gain (0.25 kg/week)</option>
+                        <option value="gain">Weight gain (0.5 kg/week)</option>
+                    </select>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" id="cancelCalorieBtn" class="btn-secondary flex-1 py-2 px-4 rounded-lg text-white font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary flex-1 py-2 px-4 rounded-lg text-white font-medium">
+                        Calculate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Sample data for weight tracking
+        let weightData = [
+            { date: '2023-09-01', weight: 72.0 },
+            { date: '2023-09-08', weight: 71.5 },
+            { date: '2023-09-15', weight: 71.0 },
+            { date: '2023-09-22', weight: 70.5 },
+            { date: '2023-10-01', weight: 70.2 },
+            { date: '2023-10-08', weight: 70.0 },
+            { date: '2023-10-15', weight: 69.7 },
+            { date: '2023-10-22', weight: 69.5 },
+            { date: '2023-11-01', weight: 69.3 },
+            { date: '2023-11-08', weight: 69.0 }
+        ];
+        
+        // Current user data
+        let userData = {
+            height: 175, // cm
+            weight: 69, // kg
+            age: 30,
+            gender: 'male',
+            activityLevel: 1.55,
+            goal: 'maintain',
+            targetWeight: 67
+        };
+        
+        // Initialize chart
+        let weightChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date input to today
+            document.getElementById('weightDate').valueAsDate = new Date();
+            
+            // Initialize weight chart
+            initWeightChart('week');
+            
+            // Update recent weight entries
+            updateRecentWeights();
+            
+            // Update weight statistics
+            updateWeightStats();
+            
+            // Event listeners
+            document.getElementById('weightForm').addEventListener('submit', handleWeightSubmit);
+            document.getElementById('bmiForm').addEventListener('submit', handleBmiSubmit);
+            document.getElementById('calorieForm').addEventListener('submit', handleCalorieSubmit);
+            document.getElementById('clearWeightBtn').addEventListener('click', clearWeightData);
+            
+            document.querySelectorAll('.time-filter').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.time-filter').forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('text-gray-600');
+                    });
+                    this.classList.add('tab-active');
+                    this.classList.remove('text-gray-600');
+                    initWeightChart(this.dataset.period);
+                });
+            });
+            
+            // Modal controls
+            document.getElementById('closeBmiModal').addEventListener('click', () => {
+                document.getElementById('bmiModal').classList.add('hidden');
+            });
+            
+            document.getElementById('cancelBmiBtn').addEventListener('click', () => {
+                document.getElementById('bmiModal').classList.add('hidden');
+            });
+            
+            document.getElementById('closeCalorieModal').addEventListener('click', () => {
+                document.getElementById('calorieModal').classList.add('hidden');
+            });
+            
+            document.getElementById('cancelCalorieBtn').addEventListener('click', () => {
+                document.getElementById('calorieModal').classList.add('hidden');
+            });
+        });
+        
+        function handleWeightSubmit(e) {
+            e.preventDefault();
+            
+            const weightInput = document.getElementById('weightInput');
+            const weightUnit = document.getElementById('weightUnit');
+            const dateInput = document.getElementById('weightDate');
+            
+            if (!weightInput.value || !dateInput.value) {
+                alert('Please enter both weight and date');
+                return;
+            }
+            
+            let weight = parseFloat(weightInput.value);
+            
+            // Convert lbs to kg if needed
+            if (weightUnit.value === 'lbs') {
+                weight = weight / 2.20462;
+            }
+            
+            // Add new weight entry
+            weightData.push({
+                date: dateInput.value,
+                weight: parseFloat(weight.toFixed(1))
+            });
+            
+            // Sort by date
+            weightData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Update current weight
+            userData.weight = weight;
+            
+            // Update UI
+            updateRecentWeights();
+            updateWeightStats();
+            initWeightChart(document.querySelector('.time-filter.tab-active').dataset.period);
+            updateBmiDisplay();
+            
+            // Reset form
+            weightInput.value = '';
+            dateInput.valueAsDate = new Date();
+        }
+        
+        function updateRecentWeights() {
+            const recentWeightsContainer = document.getElementById('recentWeights');
+            recentWeightsContainer.innerHTML = '';
+            
+            // Get last 5 entries
+            const recentEntries = [...weightData].reverse().slice(0, 5);
+            
+            if (recentEntries.length === 0) {
+                recentWeightsContainer.innerHTML = '<p class="text-sm text-gray-500 italic">No entries yet</p>';
+                return;
+            }
+            
+            recentEntries.forEach(entry => {
+                const date = new Date(entry.date);
+                const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                const entryElement = document.createElement('div');
+                entryElement.className = 'flex justify-between items-center py-1 border-b border-gray-100 last:border-0';
+                entryElement.innerHTML = `
+                    <span class="text-sm text-gray-600">${formattedDate}</span>
+                    <span class="font-medium">${entry.weight} kg</span>
+                `;
+                
+                recentWeightsContainer.appendChild(entryElement);
+            });
+        }
+        
+        function updateWeightStats() {
+            if (weightData.length === 0) return;
+            
+            const startWeight = weightData[0].weight;
+            const currentWeight = weightData[weightData.length - 1].weight;
+            const weightChange = currentWeight - startWeight;
+            const percentChange = (weightChange / startWeight) * 100;
+            
+            const startDate = new Date(weightData[0].date);
+            const monthsAgo = Math.round((new Date() - startDate) / (30 * 24 * 60 * 60 * 1000));
+            const timeAgo = monthsAgo <= 0 ? 'Today' : 
+                           monthsAgo === 1 ? '1 month ago' : 
+                           `${monthsAgo} months ago`;
+            
+            document.getElementById('startWeight').textContent = `${startWeight.toFixed(1)} kg`;
+            document.getElementById('currentWeight').textContent = `${currentWeight.toFixed(1)} kg`;
+            
+            const weightChangeElement = document.getElementById('weightChange');
+            weightChangeElement.textContent = `${weightChange > 0 ? '+' : ''}${weightChange.toFixed(1)} kg`;
+            weightChangeElement.className = `text-xl font-bold ${weightChange < 0 ? 'text-green-600' : weightChange > 0 ? 'text-red-600' : 'text-gray-600'}`;
+            
+            document.getElementById('startWeight').nextElementSibling.textContent = timeAgo;
+            
+            // Target weight info
+            document.getElementById('targetWeight').textContent = `${userData.targetWeight.toFixed(1)} kg`;
+            
+            const remaining = userData.targetWeight - currentWeight;
+            const targetRemainingElement = document.getElementById('targetRemaining');
+            
+            if (Math.abs(remaining) < 0.1) {
+                targetRemainingElement.textContent = 'Target achieved!';
+                targetRemainingElement.className = 'text-xs text-green-600 mt-1';
+            } else if (remaining > 0) {
+                targetRemainingElement.textContent = `${remaining.toFixed(1)} kg to gain`;
+                targetRemainingElement.className = 'text-xs text-blue-600 mt-1';
+            } else {
+                targetRemainingElement.textContent = `${Math.abs(remaining).toFixed(1)} kg to lose`;
+                targetRemainingElement.className = 'text-xs text-blue-600 mt-1';
+            }
+        }
+        
+        function initWeightChart(period) {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            
+            // Filter data based on selected period
+            let filteredData = [...weightData];
+            const now = new Date();
+            
+            if (period === 'week') {
+                const weekAgo = new Date();
+                weekAgo.setDate(now.getDate() - 7);
+                filteredData = weightData.filter(entry => new Date(entry.date) >= weekAgo);
+            } else if (period === 'month') {
+                const monthAgo = new Date();
+                monthAgo.setMonth(now.getMonth() - 1);
+                filteredData = weightData.filter(entry => new Date(entry.date) >= monthAgo);
+            } else if (period === 'year') {
+                const yearAgo = new Date();
+                yearAgo.setFullYear(now.getFullYear() - 1);
+                filteredData = weightData.filter(entry => new Date(entry.date) >= yearAgo);
+            }
+            
+            // Ensure we have at least 2 data points for a meaningful chart
+            if (filteredData.length < 2 && weightData.length >= 2) {
+                filteredData = weightData.slice(-2);
+            }
+            
+            // Format dates for display
+            const labels = filteredData.map(entry => {
+                const date = new Date(entry.date);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            });
+            
+            const weights = filteredData.map(entry => entry.weight);
+            
+            // Calculate min and max for y-axis
+            let min = Math.min(...weights);
+            let max = Math.max(...weights);
+            const buffer = (max - min) * 0.2;
+            min = Math.max(0, min - buffer);
+            max = max + buffer;
+            
+            // Destroy previous chart if it exists
+            if (weightChart) {
+                weightChart.destroy();
+            }
+            
+            // Create new chart
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: weights,
+                        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                        borderColor: 'rgba(30, 64, 175, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(30, 64, 175, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: min,
+                            max: max,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' kg';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Weight: ${context.parsed.y} kg`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function clearWeightData() {
+            if (confirm('Are you sure you want to clear all weight history?')) {
+                // Keep only the most recent entry
+                if (weightData.length > 0) {
+                    const lastEntry = weightData[weightData.length - 1];
+                    weightData = [lastEntry];
+                } else {
+                    weightData = [];
+                }
+                
+                updateRecentWeights();
+                initWeightChart(document.querySelector('.time-filter.tab-active').dataset.period);
+            }
+        }
+        
+        function showBmiCalculator() {
+            // Pre-fill with current values
+            document.getElementById('heightInput').value = userData.height;
+            document.getElementById('bmiWeightInput').value = userData.weight;
+            
+            // Show modal
+            document.getElementById('bmiModal').classList.remove('hidden');
+        }
+        
+        function handleBmiSubmit(e) {
+            e.preventDefault();
+            
+            const heightInput = document.getElementById('heightInput');
+            const heightUnit = document.getElementById('heightUnit');
+            const weightInput = document.getElementById('bmiWeightInput');
+            const weightUnit = document.getElementById('bmiWeightUnit');
+            
+            if (!heightInput.value || !weightInput.value) {
+                alert('Please enter both height and weight');
+                return;
+            }
+            
+            let height = parseFloat(heightInput.value);
+            let weight = parseFloat(weightInput.value);
+            
+            // Convert units if needed
+            if (heightUnit.value === 'ft') {
+                height = height * 30.48; // feet to cm
+            }
+            
+            if (weightUnit.value === 'lbs') {
+                weight = weight / 2.20462; // lbs to kg
+            }
+            
+            // Update user data
+            userData.height = height;
+            userData.weight = weight;
+            
+            // Update BMI display
+            updateBmiDisplay();
+            
+            // Close modal
+            document.getElementById('bmiModal').classList.add('hidden');
+        }
+        
+        function updateBmiDisplay() {
+            // Calculate BMI
+            const heightInMeters = userData.height / 100;
+            const bmi = userData.weight / (heightInMeters * heightInMeters);
+            
+            // Update BMI value
+            document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+            
+            // Update height and weight display
+            document.getElementById('heightValue').textContent = `${userData.height} cm`;
+            document.getElementById('weightValue').textContent = `${userData.weight.toFixed(1)} kg`;
+            
+            // Update BMI category
+            const bmiCategory = document.getElementById('bmiCategory');
+            let category, color, markerPosition;
+            
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                color = 'text-blue-500';
+                markerPosition = (bmi / 40) * 100;
+            } else if (bmi < 25) {
+                category = 'Normal Weight';
+                color = 'text-green-500';
+                markerPosition = ((bmi - 18.5) / 6.5) * 25 + 25;
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                color = 'text-yellow-500';
+                markerPosition = ((bmi - 25) / 5) * 25 + 50;
+            } else {
+                category = 'Obese';
+                color = 'text-red-500';
+                markerPosition = ((bmi - 30) / 10) * 25 + 75;
+                if (markerPosition > 100) markerPosition = 100;
+            }
+            
+            bmiCategory.textContent = category;
+            bmiCategory.className = `${color} font-medium mt-1`;
+            
+            // Update marker position
+            document.getElementById('bmiMarker').style.left = `${markerPosition}%`;
+        }
+        
+        function recalculateCalories() {
+            // Pre-fill with current values
+            document.getElementById('calorieAge').value = userData.age;
+            document.getElementById('calorieGender').value = userData.gender;
+            document.getElementById('calorieHeight').value = userData.height;
+            document.getElementById('calorieWeight').value = userData.weight;
+            document.getElementById('calorieActivity').value = userData.activityLevel;
+            document.getElementById('calorieGoalSelect').value = userData.goal;
+            
+            // Show modal
+            document.getElementById('calorieModal').classList.remove('hidden');
+        }
+        
+        function handleCalorieSubmit(e) {
+            e.preventDefault();
+            
+            const age = parseInt(document.getElementById('calorieAge').value);
+            const gender = document.getElementById('calorieGender').value;
+            const height = parseFloat(document.getElementById('calorieHeight').value);
+            const weight = parseFloat(document.getElementById('calorieWeight').value);
+            const activityLevel = parseFloat(document.getElementById('calorieActivity').value);
+            const goal = document.getElementById('calorieGoalSelect').value;
+            
+            if (!age || !height || !weight) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Update user data
+            userData.age = age;
+            userData.gender = gender;
+            userData.height = height;
+            userData.weight = weight;
+            userData.activityLevel = activityLevel;
+            userData.goal = goal;
+            
+            // Calculate and update calories
+            updateCalorieDisplay();
+            
+            // Close modal
+            document.getElementById('calorieModal').classList.add('hidden');
+        }
+        
+        function updateCalorieDisplay() {
+            // Calculate BMR using Mifflin-St Jeor Equation
+            let bmr;
+            if (userData.gender === 'male') {
+                bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age + 5;
+            } else {
+                bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age - 161;
+            }
+            
+            // Calculate TDEE (Total Daily Energy Expenditure)
+            let tdee = bmr * userData.activityLevel;
+            
+            // Adjust based on goal
+            let calories = tdee;
+            let goalText = 'Maintain Weight';
+            
+            switch (userData.goal) {
+                case 'mildLoss':
+                    calories = tdee - 250;
+                    goalText = 'Mild Weight Loss';
+                    break;
+                case 'loss':
+                    calories = tdee - 500;
+                    goalText = 'Weight Loss';
+                    break;
+                case 'extremeLoss':
+                    calories = tdee - 1000;
+                    goalText = 'Extreme Weight Loss';
+                    break;
+                case 'mildGain':
+                    calories = tdee + 250;
+                    goalText = 'Mild Weight Gain';
+                    break;
+                case 'gain':
+                    calories = tdee + 500;
+                    goalText = 'Weight Gain';
+                    break;
+            }
+            
+            // Calculate macros (simple approximation)
+            const protein = Math.round((calories * 0.25) / 4); // 25% of calories from protein, 4 calories per gram
+            const fat = Math.round((calories * 0.25) / 9);     // 25% of calories from fat, 9 calories per gram
+            const carbs = Math.round((calories * 0.5) / 4);    // 50% of calories from carbs, 4 calories per gram
+            
+            // Update display
+            document.getElementById('calorieCount').textContent = Math.round(calories).toLocaleString();
+            document.getElementById('proteinGrams').textContent = `${protein}g`;
+            document.getElementById('carbsGrams').textContent = `${carbs}g`;
+            document.getElementById('fatGrams').textContent = `${fat}g`;
+            
+            // Update activity level and goal text
+            let activityText = 'Sedentary';
+            if (userData.activityLevel === 1.375) activityText = 'Lightly Active';
+            else if (userData.activityLevel === 1.55) activityText = 'Moderate';
+            else if (userData.activityLevel === 1.725) activityText = 'Very Active';
+            else if (userData.activityLevel === 1.9) activityText = 'Extra Active';
+            
+            document.getElementById('activityLevel').textContent = activityText;
+            document.getElementById('calorieGoal').textContent = goalText;
+            
+            // Update calorie ring
+            const calorieRing = document.getElementById('calorieRing');
+            const circumference = 2 * Math.PI * 65;
+            const offset = circumference - (calories / 3000) * circumference;
+            calorieRing.style.strokeDasharray = circumference;
+            calorieRing.style.strokeDashoffset = offset;
+        }
+        
+        // Initialize BMI display
+        updateBmiDisplay();
+        
+        // Initialize calorie display
+        updateCalorieDisplay();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'965cbd6e151a60bf',t:'MTc1MzYyNTYzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

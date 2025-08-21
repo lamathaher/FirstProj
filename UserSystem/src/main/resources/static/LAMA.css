@@ -1,0 +1,157 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.main-box {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px 2px white; /* الإطار الأبيض الجميل */
+    width: 600px; /* أو جربي 500px لو بدك أوسع شوي */
+    text-align: center;
+    transition: box-shadow 0.4s ease;
+}
+
+.main-box:hover {
+box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    margin-bottom: 25px;
+    color: #3f8efc; /* اللون الأزرق الجديد */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #444;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #3f8efc; /* الأزرق الجديد */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #3172cc;
+}
+
+.signup-link,
+.signin-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.signup-link a,
+.signin-link a {
+    color: #3f8efc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link a:hover,
+.signin-link a:hover {
+    text-decoration: underline;
+}
+
+p[th\:if] {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.fancy-button { 
+    display: inline-block;
+    background-color: #3f8efc;
+    color: white;
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-left: 10px;
+    box-shadow: 0 3px 8px rgba(63, 142, 252, 0.3);
+}
+
+.fancy-button:hover {
+    background-color: #3172cc;
+    transform: scale(1.05);
+}
+
+.radio-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+    accent-color: #3f8efc;
+    margin-right: 8px;
+    transform: scale(1.2);
+}
+.logo-img {
+    width: 100px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+}

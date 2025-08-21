@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    
+    <!-- تحميل ملف CSS من المسار الصحيح -->
+<link rel="stylesheet" th:href="@{/LAMA.css}">
+</head>
+<body>
+    <div class="main-box">
+        <img th:src="@{/images/skyGym.png}" alt="Sky Gym Logo" class="logo-img">
+    
+        <h1>Login</h1>
+
+       <form method="post" action="/login">
+       <label>Email:</label>
+    <input type="email" name="email" required />
+     <label>Password:</label>
+    <input type="password" name="password" required />
+        <input type="hidden" name="_csrf" value="${_csrf.token}" />
+    
+    <button type="submit">Login</button>
+</form>
+
+
+        <!-- رسالة الخطأ -->
+        <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+
+        <!-- رابط للتسجيل -->
+     <p class="signup-link">
+    Don't have an account? <a th:href="@{/signup}">Register</a>
+</p>
+
+    </div>
+</body>
+</html>

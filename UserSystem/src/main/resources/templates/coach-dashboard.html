@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyGym Staff Dashboard - Members Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8fafc;
+        }
+        
+        .gradient-bg {
+      background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+            min-height: calc(100vh - 88px);
+        }
+        
+        .main-content {
+            background: #f8fafc;
+            min-height: calc(100vh - 88px);
+        }
+        
+        .member-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-inactive {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .search-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+        }
+        
+        .sidebar-link {
+            color: #cbd5e1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar-link.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="gradient-bg text-white">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <svg class="w-10 h-10 ml-2" viewBox="0 0 24 24" fill="none">
+                        <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L9 6l8.24 8.24z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M16.95 7.05a6 6 0 0 0-8.48 8.48L4 20l4.47-4.47a6 6 0 0 0 8.48-8.48z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <h1 class="text-2xl font-bold">SkyGym Staff Dashboard</h1>
+                </div>
+
+                <!-- Navigation Links -->
+               
+
+                <!-- Logout Button -->
+                <div class="flex items-center">
+                    <span class="mr-4 text-sm">Welcome, Staff Member</span>
+                    <form action="/logout" method="post">
+                        <button type="submit" class="font-medium hover:text-gray-200 transition">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 p-6">
+            <nav>
+                <a href="#" class="sidebar-link active">
+                    <i class="fas fa-users mr-3"></i>
+                    Members Management
+                </a>
+                <a href="/staff/edit-meals" class="sidebar-link">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    Content Management
+                </a>
+               <a href="/staff/review" class="sidebar-link flex items-center gap-3">
+  <i class="fas fa-star mr-3"></i>
+  View Reviews
+</a>
+
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content flex-1 p-6">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Members Management</h2>
+                <p class="text-gray-600">Manage and monitor all gym members</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="stats-card p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Total Members</p>
+                            <p class="text-2xl font-bold text-gray-800">247</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fas fa-user-check text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Active Members</p>
+                            <p class="text-2xl font-bold text-gray-800">198</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                            <i class="fas fa-user-plus text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">New This Month</p>
+                            <p class="text-2xl font-bold text-gray-800">23</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                            <i class="fas fa-user-times text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Expired</p>
+                            <p class="text-2xl font-bold text-gray-800">26</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="member-card p-6 mb-6">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="flex-1 max-w-md">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input 
+                                type="text" 
+                                id="searchInput"
+                                placeholder="Search by name or email..." 
+                                class="search-box pl-10"
+                            >
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <select class="search-box max-w-xs">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                     <button type="button" onclick="openForm()" class="btn-primary">
+  <i class="fas fa-plus mr-2"></i>
+  Add New Member
+</button>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Table -->
+            <div class="member-card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                       <tbody class="bg-white divide-y divide-gray-200" id="membersTableBody">
+    <tr class="member-row hover:bg-gray-50" th:each="user : ${users}">
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900" th:text="${user.id}"></div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900" th:text="${user.name}"></div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900" th:text="${user.email}"></div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="status-badge status-active">Active</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+               <button 
+  class="btn-primary"
+  th:attr="data-username=${user.name}, data-email=${user.email}" 
+  onclick="openEditForm(this.dataset.username, this.dataset.email)">
+  <i class="fas fa-edit"></i>
+</button>
+
+                 <button class="btn-success" th:attr="data-username=${user.name}" onclick="showProgress(this.dataset.username)">
+                                                <i class="fas fa-chart-line"></i>
+                                            </button>
+                <button class="btn-secondary" th:attr="data-username=${user.name},data-status=active" onclick="toggleStatus(this.dataset.username, this.dataset.status, this)">
+                                                <i class="fas fa-user-slash"></i>
+                                            </button>
+               
+            </div>
+        </td>
+    </tr>
+</tbody>
+
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-6">
+                <div class="text-sm text-gray-700">
+                    Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">247</span> results
+                </div>
+                <div class="flex gap-2">
+                    <button class="btn-secondary">Previous</button>
+                    <button class="btn-primary">1</button>
+                    <button class="btn-secondary">2</button>
+                    <button class="btn-secondary">3</button>
+                    <button class="btn-secondary">Next</button>
+                </div>
+            </div>
+         <!-- Progress Chart Modal -->
+    <div id="progressModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800" id="modalMemberName">Member Progress</h3>
+                    <p class="text-gray-600">Weight tracking and fitness progress</p>
+                </div>
+                <button onclick="closeProgressModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Time Filter Tabs -->
+                <div class="flex gap-2 mb-6">
+                    <button class="time-filter tab-active px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-medium" data-period="7" onclick="switchTimePeriod(this, '7')">
+                        7 Days
+                    </button>
+                    <button class="time-filter px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200" data-period="30" onclick="switchTimePeriod(this, '30')">
+                        30 Days
+                    </button>
+                    <button class="time-filter px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200" data-period="90" onclick="switchTimePeriod(this, '90')">
+                        3 Months
+                    </button>
+                    <button class="time-filter px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium hover:bg-gray-200" data-period="365" onclick="switchTimePeriod(this, '365')">
+                        1 Year
+                    </button>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="bg-white rounded-lg border p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-semibold text-gray-800">Weight Progress</h4>
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Fitness Progress Overview
+                        </div>
+                    </div>
+                    <div class="relative h-80">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Entries -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h5 class="font-semibold text-gray-800 mb-3">Recent Weight Entries</h5>
+                    <div id="recentWeights" class="space-y-2">
+                        <!-- Recent entries will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+  <div id="formOverlay" style="
+    display:none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 9999;
+">
+    <div style="
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        width: 350px;
+        max-width: 90vw;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    ">
+        <h2 style="margin-bottom:15px;">Add New Member</h2>
+        <form id="memberForm">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="name" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+
+            <label for="age">Age:</label><br>
+            <input type="number" id="age" name="age" required style="width:100%; padding:8px; margin-bottom:15px;"><br>
+
+            <button type="submit" class="btn-primary" style="margin-right:10px;">Submit</button>
+            <button type="button" onclick="closeForm()" class="btn-secondary">Cancel</button>
+        </form>
+    </div>
+</div>
+<!-- Edit Member Modal -->
+<div id="editMemberModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+    <button type="button" onclick="closeEditForm()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+      <i class="fas fa-times text-xl"></i>
+    </button>
+    <h3 id="editModalTitle" class="text-xl font-bold mb-4">Edit Member</h3>
+
+    <!-- Form -->
+    <form id="editMemberForm" onsubmit="submitEditForm(event)">
+      <div class="mb-3">
+        <label for="editMemberName" class="block text-sm font-medium">Name</label>
+        <input type="text" id="editMemberName" class="w-full border rounded px-2 py-1 bg-gray-100" readonly>
+      </div>
+      <div class="mb-3">
+        <label for="editEmail" class="block text-sm font-medium">Email</label>
+        <input type="email" id="editEmail" name="email" class="w-full border rounded px-2 py-1" required>
+      </div>
+      <div class="mb-3">
+        <label for="editPassword" class="block text-sm font-medium">Password</label>
+        <input type="password" id="editPassword" name="password" class="w-full border rounded px-2 py-1">
+      </div>
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeEditForm()" class="btn-secondary">Cancel</button>
+        <button type="submit" class="btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <script>
+  document.getElementById('searchInput')?.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const memberRows = document.querySelectorAll('.member-row');
+
+    memberRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const memberId = cells[0] ? cells[0].textContent.toLowerCase() : '';
+      const memberEmail = cells[2] ? cells[2].textContent.toLowerCase() : '';
+
+      if (memberId.includes(searchTerm) || memberEmail.includes(searchTerm)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+
+	  // ===== Action functions =====
+	  function editMember(memberName) {
+	    alert(`Editing member: ${memberName}\n\nThis would open an edit form with member details.`);
+	  }
+
+	  function toggleStatus(memberName, currentStatus, btn) {
+	    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+	    const action = currentStatus === 'active' ? 'deactivate' : 'activate';
+	    const confirmed = confirm(`Are you sure you want to ${action} ${memberName}?`);
+	    if (!confirmed) return;
+
+	    // Update badge in UI
+	    const row = btn?.closest('tr');
+	    if (row) {
+	      const badge = row.querySelector('.status-badge');
+	      if (badge) {
+	        badge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+	        badge.classList.remove('status-active', 'status-inactive');
+	        badge.classList.add(newStatus === 'active' ? 'status-active' : 'status-inactive');
+	      }
+	    }
+
+	    // Update button dataset so next toggle uses updated status
+	    if (btn) {
+	      btn.dataset.status = newStatus;
+	    }
+
+	    alert(`Member ${memberName} has been ${action}d successfully!`);
+	    // TODO: persist newStatus to backend via fetch/AJAX if needed
+	  }
+
+	  
+
+	  // ===== Progress modal logic =====
+	  function showProgress(memberName) {
+	    // Set modal title
+	    const modalTitle = document.getElementById('modalMemberName');
+	    if (modalTitle) {
+	      modalTitle.textContent = `Progress: ${memberName}`;
+	    }
+
+	    // (Optional) Populate recent weights - example stub
+	    const recentWeightsContainer = document.getElementById('recentWeights');
+	    if (recentWeightsContainer) {
+	      recentWeightsContainer.innerHTML = '';
+	      const sample = [
+	        { date: '2025-07-25', weight: '72kg' },
+	        { date: '2025-07-18', weight: '72.5kg' },
+	        { date: '2025-07-11', weight: '73kg' }
+	      ];
+	      sample.forEach(entry => {
+	        const div = document.createElement('div');
+	        div.className = 'flex justify-between bg-white p-2 rounded shadow-sm';
+	        div.innerHTML = `<span class="text-sm">${entry.date}</span><span class="text-sm font-medium">${entry.weight}</span>`;
+	        recentWeightsContainer.appendChild(div);
+	      });
+	    }
+
+	    // Show modal
+	    const modal = document.getElementById('progressModal');
+	    if (modal) modal.classList.remove('hidden');
+
+	    // Initialize/update chart for default period (7 days)
+	    switchTimePeriod(document.querySelector('.time-filter.tab-active'), '7', true);
+	  }
+
+	  function closeProgressModal() {
+	    const modal = document.getElementById('progressModal');
+	    if (modal) modal.classList.add('hidden');
+	  }
+
+	  // ===== Time period switcher for progress chart =====
+	   function openForm(username) {
+    const overlay = document.getElementById("formOverlay");
+    if (!overlay) return;
+    overlay.style.display = "block";
+
+    const usernameField = document.getElementById("usernameField");
+    const title = document.getElementById("formTitle");
+
+    if (username) {
+      if (usernameField) usernameField.value = username;
+      if (title) title.textContent = `Edit Member: ${username}`;
+    } else {
+      if (usernameField) usernameField.value = "";
+      if (title) title.textContent = "Add New Member";
+    }
+  }
+
+  function closeForm() {
+    const overlay = document.getElementById("formOverlay");
+    if (overlay) overlay.style.display = "none";
+
+    const form = document.getElementById("memberForm");
+    if (form) form.reset();
+
+    const title = document.getElementById("formTitle");
+    if (title) title.textContent = "Add New Member";
+  }
+
+  // ===== باقي الكود =====
+  function switchTimePeriod(buttonElem, period, suppressTabUpdate = false) {
+    if (!buttonElem) return;
+    if (!suppressTabUpdate) {
+      document.querySelectorAll('.time-filter').forEach(btn => {
+        btn.classList.remove('tab-active', 'bg-blue-100', 'text-blue-700');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+      });
+      buttonElem.classList.add('tab-active', 'bg-blue-100', 'text-blue-700');
+      buttonElem.classList.remove('bg-gray-100');
+    }
+
+    const periodDays = parseInt(period, 10);
+    const labels = [];
+    const dataPoints = [];
+    const now = new Date();
+    for (let i = periodDays - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
+      dataPoints.push(70 + Math.sin(i / 5) * 2 + Math.random() * 0.5);
+    }
+
+    if (window.weightChartInstance) {
+      window.weightChartInstance.data.labels = labels;
+      window.weightChartInstance.data.datasets[0].data = dataPoints;
+      window.weightChartInstance.update();
+    } else {
+      const ctx = document.getElementById('weightChart')?.getContext('2d');
+      if (!ctx) return;
+      window.weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Weight (kg)',
+            data: dataPoints,
+            fill: false,
+            tension: 0.3,
+            borderWidth: 2,
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: false }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // ربط أزرار التبديل بدون الاعتماد على inline onclick
+    document.querySelectorAll('.time-filter').forEach(btn => {
+      btn.addEventListener('click', function() {
+        switchTimePeriod(btn, btn.dataset.period);
+      });
+    });
+
+    // باقي الأنيميشن والتعامل مع الفورم
+    document.querySelectorAll('.stats-card').forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'all 0.5s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+
+    document.querySelectorAll('.member-row').forEach((row, index) => {
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(-20px)';
+      setTimeout(() => {
+        row.style.transition = 'all 0.5s ease';
+        row.style.opacity = '1';
+        row.style.transform = 'translateX(0)';
+      }, 500 + index * 100);
+    });
+
+    // فورم السحب
+    const form = document.getElementById("memberForm");
+    if (form) {
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+        console.log("Form Data:", data);
+        alert("✅ Member submitted (not saved to DB yet)");
+        closeForm();
+      });
+    }
+  });
+
+  // إغلاق مودال التقدم
+  document.addEventListener('click', function (e) {
+    const modal = document.getElementById('progressModal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    const content = modal.querySelector('.bg-white.rounded-lg');
+    if (content && !content.contains(e.target) && !e.target.closest('.btn-success')) {
+      closeProgressModal();
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('progressModal');
+      if (!modal || modal.classList.contains('hidden')) return;
+      closeProgressModal();
+    }
+  });
+  // ===== EDIT MEMBER FORM FUNCTIONS =====
+  
+  // Open edit form modal
+  function openEditForm(memberName, memberEmail) {
+      // Set modal title
+      document.getElementById('editModalTitle').textContent = `Edit ${memberName}`;
+      
+      // Populate form fields
+      document.getElementById('editMemberName').value = memberName;
+      document.getElementById('editEmail').value = memberEmail;
+      document.getElementById('editPassword').value = ''; // Clear password field
+      
+      // Show modal
+      document.getElementById('editMemberModal').classList.remove('hidden');
+  }
+
+  // Close edit form modal
+  function closeEditForm() {
+      document.getElementById('editMemberModal').classList.add('hidden');
+      // Clear form
+      document.getElementById('editMemberForm').reset();
+  }
+  function openEditForm(name, email) {
+	  const modal = document.getElementById('editMemberModal');
+	  if (!modal) return;
+
+	  // عرض المودال
+	  modal.classList.remove('hidden');
+
+	  // تعبئة البيانات في الفورم
+	  const nameInput = document.getElementById('editMemberName');
+	  const emailInput = document.getElementById('editEmail');
+	  if (nameInput) nameInput.value = name;
+	  if (emailInput) emailInput.value = email;
+
+	  const title = document.getElementById('editModalTitle');
+	  if (title) title.textContent = `Edit Member: ${name}`;
+	}
+
+	function closeEditForm() {
+	  const modal = document.getElementById('editMemberModal');
+	  if (modal) modal.classList.add('hidden');
+
+	  const form = document.getElementById('editMemberForm');
+	  if (form) form.reset();
+	}
+
+
+ 
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'967c69d770ce5cd1',t:'MTc1Mzk1Nzc1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

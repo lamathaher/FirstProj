@@ -1,0 +1,77 @@
+/* الخط العام */
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f9fafb;
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+}
+
+/* الهيدر */
+.rectangle-header {
+  background: linear-gradient(135deg, #1a2c47, #2e4365);
+  padding: 16px 32px;
+  text-align: right;
+}
+
+.header-link {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 16px;
+}
+
+.header-link:hover {
+  color: #d1d5db;
+}
+
+/* محتوى الصفحة */
+.page-content {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* الصندوق الرئيسي */
+.main-box {
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+  max-width: 500px;
+  width: 100%;
+  text-align: right;
+}
+
+.main-box h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a2c47;
+  margin-bottom: 24px;
+}
+
+.main-box p {
+  font-size: 18px;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.main-box strong {
+  color: #2e4365;
+}
+
+/* ميديا كويري للموبايل */
+@media (max-width: 640px) {
+  .main-box {
+    padding: 24px;
+  }
+
+  .main-box h1 {
+    font-size: 22px;
+  }
+
+  .main-box p {
+    font-size: 16px;
+  }
+}

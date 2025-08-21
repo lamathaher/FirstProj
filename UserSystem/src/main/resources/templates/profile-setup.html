@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Setup</title>
+    <link rel="stylesheet" th:href="@{/LAMA.css}">
+    <style>
+        .other-allergy-input {
+            margin-top: 5px;
+            display: none;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        label {
+            display: block;
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+<div class="main-box">
+    <h1>Profile Setup</h1>
+
+    <form action="/profile-complete" method="post" id="profile-form">
+        <!-- Hidden fields -->
+        <input type="hidden" name="id" th:value="${user.id}" />
+        <input type="hidden" name="name" th:value="${user.name}" />
+        <input type="hidden" name="email" th:value="${user.email}" />
+        <input type="hidden" name="password" th:value="${user.password}" />
+
+        <!-- Weight -->
+        <label for="weight">Weight:</label>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="weight" name="weight" required style="flex: 1;" />
+            <select name="weight_unit" aria-label="Weight unit" style="width: 80px;">
+                <option value="kg">kg</option>
+                <option value="lbs">lbs</option>
+            </select>
+        </div>
+
+        <!-- Height -->
+        <label for="height">Height:</label>
+        <div style="display: flex; gap: 10px;">
+            <select name="height" id="height" required style="flex: 1;">
+                <option value="" disabled selected>Select</option>
+                <option th:each="i : ${#numbers.sequence(100, 220)}"
+                        th:value="${i}" th:text="${i}"></option>
+            </select>
+            <select name="height_unit" required aria-label="Height unit" style="width: 80px;">
+                <option value="cm">cm</option>
+                <option value="ft">ft</option>
+            </select>
+        </div>
+
+        <!-- Age -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required />
+
+        <!-- Gender -->
+        <label>Gender:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" required /> Male</label>
+            <label><input type="radio" name="gender" value="female" required /> Female</label>
+        </div>
+
+        <!-- Goal -->
+        <div class="select-group">
+            <label for="goal">Goal:</label>
+            <select id="goal" name="goal" required>
+                <option value="" disabled selected>Select your goal</option>
+                <option value="lose_weight">Lose Weight</option>
+                <option value="build_muscle">Build Muscle</option>
+                <option value="maintain_health">Maintain Health</option>
+            </select>
+        </div>
+
+        <!-- Allergies -->
+        <div class="select-group">
+            <label>Allergies:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="allergies" value="nuts" /> Nuts</label>
+                <label><input type="checkbox" name="allergies" value="gluten" /> Gluten</label>
+                <label><input type="checkbox" name="allergies" value="dairy" /> Dairy</label>
+                <label>
+                    <input type="checkbox" id="other-allergy-checkbox" name="allergies" value="other" />
+                    Other (if there are other allergies, write them down)
+                </label>
+                <input type="text" id="other-allergy-input" name="other_allergies" class="other-allergy-input" placeholder="Describe other allergies" />
+            </div>
+        </div>
+
+        <!-- Dietary Preferences -->
+        <div class="select-group">
+            <label for="dietaryPreferences">Dietary Preferences:</label>
+            <select id="dietaryPreferences" name="dietaryPreferences" required>
+                <option value="" disabled selected>Select preference</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="keto">Keto</option>
+            </select>
+        </div>
+
+        <!-- Button -->
+        <button type="submit" style="margin-top: 1rem;">Register</button>
+    </form>
+</div>
+
+<script>
+    // Toggle visibility of "other allergies" input
+    const otherCheckbox = document.getElementById('other-allergy-checkbox');
+    const otherInput = document.getElementById('other-allergy-input');
+
+    function updateOtherInput() {
+        if (otherCheckbox.checked) {
+            otherInput.style.display = 'block';
+            otherInput.required = true;
+        } else {
+            otherInput.style.display = 'none';
+            otherInput.required = false;
+            otherInput.value = '';
+        }
+    }
+
+    otherCheckbox.addEventListener('change', updateOtherInput);
+    // initialize on load in case of retained state
+    updateOtherInput();
+</script>
+</body>
+</html>

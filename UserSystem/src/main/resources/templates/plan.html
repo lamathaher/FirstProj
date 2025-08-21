@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyGym - Weekly Fitness & Nutrition Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== FONT IMPORT ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        /* ===== GLOBAL STYLES ===== */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+            min-height: 100vh;
+        }
+        
+        /* ===== ANIMATED DIVIDER ===== */
+        .animated-divider {
+            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* ===== PROGRESS BAR ANIMATIONS ===== */
+        .progress-bar {
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* ===== CARD HOVER EFFECTS ===== */
+        .workout-card, .meal-card {
+            transition: all 0.3s ease;
+        }
+        
+        .workout-card:hover, .meal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* ===== CHECKBOX ANIMATIONS ===== */
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-checkbox:checked {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: #10b981;
+        }
+        
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* ===== SECTION HEADERS ===== */
+        .section-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+            .animated-divider {
+                width: 100% !important;
+                height: 4px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="min-h-screen p-4">
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">
+                <i class="fas fa-dumbbell mr-3"></i>
+                SkyGym Weekly Plan
+            </h1>
+            <p class="text-white/80 text-lg">Your personalized fitness and nutrition journey</p>
+        </div>
+
+        <!-- ===== USER INPUT FORM ===== -->
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">
+                    <i class="fas fa-user-cog mr-2"></i>
+                    Setup Your Personal Plan
+                </h2>
+                <form id="planForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                        <input type="number" id="age" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="25" min="16" max="80">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                        <input type="number" id="weight" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="70" min="40" max="200">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Height (cm)</label>
+                        <input type="number" id="height" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="175" min="140" max="220">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Activity Level</label>
+                        <select id="activity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="sedentary">Sedentary (Little/No Exercise)</option>
+                            <option value="light">Light Activity (1-3 days/week)</option>
+                            <option value="moderate">Moderate Activity (3-5 days/week)</option>
+                            <option value="active">Very Active (6-7 days/week)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Goal</label>
+                        <select id="goal" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="lose">Weight Loss</option>
+                            <option value="maintain">Maintain Weight</option>
+                            <option value="gain">Weight Gain</option>
+                            <option value="muscle">Build Muscle</option>
+                        </select>
+                    </div>
+                    
+                  <div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Allergies (Optional)</label>
+    <select id="allergies" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <option value="nuts">Nuts</option>
+        <option value="dairy">Dairy</option>
+        <option value="gluten">Gluten</option>
+        <option value="shellfish">Shellfish</option>
+        <option value="soy">Soy</option>
+        <option value="eggs">Eggs</option>
+        <option value="other">If other, write it down below</option>
+    </select>
+    <input type="text" id="other-allergy" class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Write your allergy here" style="display:none;">
+</div>
+                </form>
+                <div class="text-center mt-6">
+                    <button id="generatePlan" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-magic mr-2"></i>
+                        Generate My Personal Plan
+                    </button>
+                </div>
+                <div id="loadingMessage" class="text-center mt-4 hidden">
+                    <div class="inline-flex items-center">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-3"></div>
+                        <span class="text-gray-600">Generating your personalized plan...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SPLIT SCREEN CONTAINER ===== -->
+        <div class="split-container flex gap-4 max-w-7xl mx-auto">
+            
+            <!-- ===== 🏋️ WORKOUTS SECTION (LEFT SIDE) ===== -->
+            <div class="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
+                <!-- Workouts Header -->
+                <div class="section-header rounded-xl p-4 mb-6">
+                   <h2 class="text-2xl font-bold text-blue-800 flex items-center">
+    <i class="fas fa-dumbbell mr-3 text-blue-400"></i>
+    🏋️ Weekly Workouts
+</h2>
+
+                    <p class="text-white/80 mt-2">Track your fitness progress</p>
+                </div>
+
+                <!-- Weekly Progress Overview -->
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">📊 Weekly Progress Overview</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>Completed Workouts</span>
+                            <span id="completedWorkouts">0/34</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div id="weeklyProgressBar" class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="text-xs text-gray-600 text-center">
+                            <span id="progressPercentage">0%</span> Complete
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workout Recommendation -->
+                <div id="workoutRecommendation" class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 mb-6 hidden">
+                    <h3 class="font-semibold text-gray-800 mb-2">💡 Your Workout Recommendation</h3>
+                    <p id="workoutAdvice" class="text-sm text-gray-700"></p>
+                </div>
+
+                <!-- 7 Days of Workouts -->
+                <div class="space-y-4">
+                    <!-- SUNDAY: Full Body -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">🌟 Sunday - Full Body</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="sunday-progress">0/5</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="sunday-bar" class="progress-bar bg-gradient-to-r from-orange-400 to-red-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="sunday">
+                                <span class="text-sm">Push-ups (3 sets of 12)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="sunday">
+                                <span class="text-sm">Squats (3 sets of 15)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="sunday">
+                                <span class="text-sm">Planks (3 sets of 30s)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="sunday">
+                                <span class="text-sm">Lunges (3 sets of 10 each leg)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="sunday">
+                                <span class="text-sm">Burpees (2 sets of 8)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- MONDAY: Cardio + Stretching -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">💨 Monday - Cardio + Stretching</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="monday-progress">0/4</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="monday-bar" class="progress-bar bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="monday">
+                                <span class="text-sm">Running/Jogging (20 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="monday">
+                                <span class="text-sm">Jumping Jacks (3 sets of 30)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="monday">
+                                <span class="text-sm">Full Body Stretch (10 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="monday">
+                                <span class="text-sm">Cool Down Walk (5 minutes)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TUESDAY: Rest/Light Yoga -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">🧘 Tuesday - Rest/Light Yoga</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="tuesday-progress">0/3</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="tuesday-bar" class="progress-bar bg-gradient-to-r from-purple-400 to-pink-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="tuesday">
+                                <span class="text-sm">Morning Sun Salutation (10 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="tuesday">
+                                <span class="text-sm">Gentle Stretching (15 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="tuesday">
+                                <span class="text-sm">Meditation (10 minutes)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- WEDNESDAY: Upper Body -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">💪 Wednesday - Upper Body</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="wednesday-progress">0/5</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="wednesday-bar" class="progress-bar bg-gradient-to-r from-red-400 to-orange-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="wednesday">
+                                <span class="text-sm">Push-ups (4 sets of 10)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="wednesday">
+                                <span class="text-sm">Tricep Dips (3 sets of 12)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="wednesday">
+                                <span class="text-sm">Arm Circles (3 sets of 20)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="wednesday">
+                                <span class="text-sm">Pike Push-ups (3 sets of 8)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="wednesday">
+                                <span class="text-sm">Plank to Downward Dog (3 sets of 10)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- THURSDAY: Cardio -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">🏃 Thursday - Cardio</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="thursday-progress">0/4</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="thursday-bar" class="progress-bar bg-gradient-to-r from-yellow-400 to-green-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="thursday">
+                                <span class="text-sm">High Knees (3 sets of 30s)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="thursday">
+                                <span class="text-sm">Mountain Climbers (3 sets of 20)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="thursday">
+                                <span class="text-sm">Jump Rope (15 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="thursday">
+                                <span class="text-sm">Sprint Intervals (10 minutes)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- FRIDAY: Lower Body -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">🦵 Friday - Lower Body</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="friday-progress">0/5</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="friday-bar" class="progress-bar bg-gradient-to-r from-indigo-400 to-purple-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="friday">
+                                <span class="text-sm">Squats (4 sets of 15)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="friday">
+                                <span class="text-sm">Lunges (3 sets of 12 each leg)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="friday">
+                                <span class="text-sm">Calf Raises (3 sets of 20)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="friday">
+                                <span class="text-sm">Wall Sits (3 sets of 30s)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="friday">
+                                <span class="text-sm">Glute Bridges (3 sets of 15)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- SATURDAY: Active Recovery -->
+                    <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold text-gray-800">🌿 Saturday - Active Recovery</h4>
+                            <div class="text-sm text-gray-600">
+                                <span id="saturday-progress">0/3</span> completed
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div id="saturday-bar" class="progress-bar bg-gradient-to-r from-teal-400 to-green-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="saturday">
+                                <span class="text-sm">Light Walking (30 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="saturday">
+                                <span class="text-sm">Gentle Yoga Flow (20 minutes)</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" data-day="saturday">
+                                <span class="text-sm">Deep Breathing (10 minutes)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ANIMATED DIVIDER ===== -->
+            <div class="animated-divider w-1 rounded-full"></div>
+
+            <!-- ===== 🍽️ HEALTHY MEALS SECTION (RIGHT SIDE) ===== -->
+            <div class="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
+                <!-- Meals Header -->
+                <div class="section-header rounded-xl p-4 mb-6">
+                    <h2 class="text-2xl font-bold text-blue-800 flex items-center">
+    <i class="fas fa-utensils mr-3 text-green-400"></i>
+    🍽️ Weekly Nutrition
+</h2>
+
+                    <p class="text-white/80 mt-2">Fuel your fitness journey</p>
+                </div>
+
+                <!-- Daily Nutrition Goals -->
+                <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-3">🎯 Daily Nutrition Goals</h3>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div id="targetCalories" class="text-2xl font-bold text-green-600">2000</div>
+                            <div class="text-xs text-gray-600">Calories</div>
+                        </div>
+                        <div>
+                            <div id="targetProtein" class="text-2xl font-bold text-blue-600">150g</div>
+                            <div class="text-xs text-gray-600">Protein</div>
+                        </div>
+                        <div>
+                            <div id="targetWater" class="text-2xl font-bold text-purple-600">8</div>
+                            <div class="text-xs text-gray-600">Glasses H₂O</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Meal Plans -->
+                <div id="mealPlansContainer" class="space-y-4">
+                    <!-- Default message before plan generation -->
+                    <div id="defaultMealMessage" class="text-center py-12">
+                        <div class="text-6xl mb-4">🍽️</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Your Personal Meal Plan</h3>
+                        <p class="text-gray-500">Fill in your details above and click "Generate My Personal Plan" to see your customized meals</p>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== WORKOUT PROGRESS TRACKING =====
+        
+        // Object to store workout counts for each day
+        const workoutCounts = {
+            sunday: 5,
+            monday: 4,
+            tuesday: 3,
+            wednesday: 5,
+            thursday: 4,
+            friday: 5,
+            saturday: 3
+        };
+
+        // Calculate total workouts
+        const totalWorkouts = Object.values(workoutCounts).reduce((sum, count) => sum + count, 0);
+
+        // Function to update progress for a specific day
+        function updateDayProgress(day) {
+            const checkboxes = document.querySelectorAll(`input[data-day="${day}"]`);
+            const checkedCount = document.querySelectorAll(`input[data-day="${day}"]:checked`).length;
+            const totalCount = workoutCounts[day];
+            const percentage = (checkedCount / totalCount) * 100;
+
+            // Update day progress text
+            document.getElementById(`${day}-progress`).textContent = `${checkedCount}/${totalCount}`;
+            
+            // Update day progress bar
+            document.getElementById(`${day}-bar`).style.width = `${percentage}%`;
+        }
+
+        // Function to update overall weekly progress
+        function updateWeeklyProgress() {
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const completedWorkouts = checkedCheckboxes.length;
+            const weeklyPercentage = (completedWorkouts / totalWorkouts) * 100;
+
+            // Update weekly progress text
+            document.getElementById('completedWorkouts').textContent = `${completedWorkouts}/${totalWorkouts}`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(weeklyPercentage)}%`;
+            
+            // Update weekly progress bar
+            document.getElementById('weeklyProgressBar').style.width = `${weeklyPercentage}%`;
+        }
+
+        // Add event listeners to all checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const day = this.getAttribute('data-day');
+                    
+                    // Update progress for the specific day
+                    updateDayProgress(day);
+                    
+                    // Update overall weekly progress
+                    updateWeeklyProgress();
+                    
+                    // Add a small celebration animation when checked
+                    if (this.checked) {
+                        this.parentElement.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            this.parentElement.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+            });
+
+            // Initialize progress on page load
+            Object.keys(workoutCounts).forEach(day => {
+                updateDayProgress(day);
+            });
+            updateWeeklyProgress();
+        });
+
+        // ===== SMOOTH SCROLL ANIMATIONS =====
+        
+        // Add intersection observer for smooth animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all workout and meal cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.workout-card, .meal-card');
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+                card.style.transitionDelay = `${index * 0.1}s`;
+                
+                observer.observe(card);
+            });
+        });
+
+        // ===== MOTIVATIONAL MESSAGES =====
+        
+        // Show motivational messages based on progress
+        function showMotivationalMessage() {
+            const completedWorkouts = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const percentage = (completedWorkouts / totalWorkouts) * 100;
+            
+            let message = '';
+            
+            if (percentage === 100) {
+                message = '🎉 Amazing! You completed all workouts this week! You\'re a fitness champion!';
+            } else if (percentage >= 75) {
+                message = '💪 Great job! You\'re almost there! Keep pushing!';
+            } else if (percentage >= 50) {
+                message = '👍 Good progress! You\'re halfway through your weekly goals!';
+            } else if (percentage >= 25) {
+                message = '🌟 Nice start! Keep building that momentum!';
+            } else if (percentage > 0) {
+                message = '🚀 Every journey starts with a single step! Keep going!';
+            }
+            
+            if (message && Math.random() < 0.3) { // Show message 30% of the time
+                setTimeout(() => {
+                    alert(message);
+                }, 500);
+            }
+        }
+
+        // Add motivational message trigger
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                setTimeout(showMotivationalMessage, 1000);
+            }
+        });
+
+        // ===== BACKEND SIMULATION & DYNAMIC PLAN GENERATION =====
+        
+        // Workout database based on goals and activity levels
+        const workoutDatabase = {
+            lose: {
+                sedentary: {
+                    sunday: [
+                        "Light walking (15 minutes)",
+                        "Basic stretching (10 minutes)",
+                        "Wall push-ups (2 sets of 8)",
+                        "Chair squats (2 sets of 10)",
+                        "Deep breathing (5 minutes)"
+                    ],
+                    monday: [
+                        "Gentle walking (20 minutes)",
+                        "Arm circles (2 sets of 15)",
+                        "Marching in place (10 minutes)",
+                        "Light stretching (10 minutes)"
+                    ],
+                    tuesday: [
+                        "Yoga stretches (15 minutes)",
+                        "Meditation (10 minutes)",
+                        "Light movement (10 minutes)"
+                    ],
+                    wednesday: [
+                        "Wall push-ups (3 sets of 8)",
+                        "Seated arm raises (3 sets of 12)",
+                        "Shoulder rolls (3 sets of 10)",
+                        "Neck stretches (5 minutes)",
+                        "Light cardio (10 minutes)"
+                    ],
+                    thursday: [
+                        "Walking (25 minutes)",
+                        "Light dancing (10 minutes)",
+                        "Basic movements (10 minutes)",
+                        "Cool down stretches (5 minutes)"
+                    ],
+                    friday: [
+                        "Chair squats (3 sets of 12)",
+                        "Calf raises (3 sets of 15)",
+                        "Ankle circles (2 sets of 20)",
+                        "Leg stretches (10 minutes)",
+                        "Balance exercises (5 minutes)"
+                    ],
+                    saturday: [
+                        "Leisurely walk (30 minutes)",
+                        "Gentle yoga (15 minutes)",
+                        "Relaxation (10 minutes)"
+                    ]
+                },
+                light: [
+                    // Standard workout as shown in HTML
+                ],
+                moderate: [
+                    // Intensified version
+                ],
+                active: [
+                    // High intensity version
+                ]
+            },
+            gain: {
+                // Similar structure for weight gain
+            },
+            maintain: {
+                // Similar structure for maintenance
+            },
+            muscle: {
+                // Similar structure for muscle building
+            }
+        };
+
+        // Function to generate dynamic workouts based on user inputs
+        function generateWorkouts(goal, activityLevel, age, weight) {
+            // For now, we'll use the existing static workouts
+            // But we can modify intensity based on inputs
+            const intensityMultiplier = activityLevel === 'sedentary' ? 0.7 : 
+                                      activityLevel === 'light' ? 0.85 :
+                                      activityLevel === 'moderate' ? 1.0 : 1.2;
+            
+            // Age factor (reduce intensity for older users)
+            const ageFactor = age > 50 ? 0.8 : age > 40 ? 0.9 : 1.0;
+            
+            // Weight factor (adjust for heavier users)
+            const weightFactor = weight > 90 ? 0.9 : weight < 60 ? 1.1 : 1.0;
+            
+            const finalIntensity = intensityMultiplier * ageFactor * weightFactor;
+            
+            // Return modified workout recommendations
+            return {
+                intensity: finalIntensity,
+                recommendation: finalIntensity < 0.8 ? "Start with lighter exercises and gradually increase intensity" :
+                              finalIntensity > 1.1 ? "You can handle more challenging workouts" :
+                              "Standard workout intensity is perfect for you"
+            };
+        }
+        
+        // Meal database with different options based on goals
+        const mealDatabase = {
+            lose: {
+                breakfast: [
+                    { name: "Oatmeal with berries and honey", emoji: "🥣", calories: 320, allergens: ["gluten"] },
+                    { name: "Boiled eggs with whole grain toast", emoji: "🍳", calories: 280, allergens: ["eggs", "gluten"] },
+                    { name: "Green spinach smoothie", emoji: "🥤", calories: 250, allergens: [] },
+                    { name: "Greek yogurt with fruits", emoji: "🥛", calories: 200, allergens: ["dairy"] }
+                ],
+                lunch: [
+                    { name: "Quinoa vegetable salad", emoji: "🥗", calories: 450, allergens: [] },
+                    { name: "Lentil soup with brown bread", emoji: "🍲", calories: 380, allergens: ["gluten"] },
+                    { name: "Grilled chicken salad", emoji: "🥙", calories: 420, allergens: [] },
+                    { name: "Vegetable hummus wrap", emoji: "🌯", calories: 350, allergens: ["gluten"] }
+                ],
+                snack: [
+                    { name: "Apple with almond butter", emoji: "🍎", calories: 150, allergens: ["nuts"] },
+                    { name: "Carrots with hummus", emoji: "🥕", calories: 120, allergens: [] },
+                    { name: "Mixed nuts handful", emoji: "🥜", calories: 180, allergens: ["nuts"] },
+                    { name: "Low-fat yogurt", emoji: "🥛", calories: 100, allergens: ["dairy"] }
+                ],
+                dinner: [
+                    { name: "Grilled salmon with broccoli", emoji: "🐟", calories: 480, allergens: ["fish"] },
+                    { name: "Grilled chicken with vegetables", emoji: "🍗", calories: 520, allergens: [] },
+                    { name: "Tofu stir-fry with vegetables", emoji: "🥘", calories: 420, allergens: ["soy"] },
+                    { name: "Healthy tuna salad", emoji: "🥗", calories: 380, allergens: ["fish"] }
+                ]
+            },
+            gain: {
+                breakfast: [
+                    { name: "Protein pancakes with banana", emoji: "🥞", calories: 520, allergens: ["eggs", "dairy", "gluten"] },
+                    { name: "Avocado toast with eggs", emoji: "🥑", calories: 480, allergens: ["eggs", "gluten"] },
+                    { name: "Oatmeal with nuts and honey", emoji: "🥣", calories: 450, allergens: ["nuts", "gluten"] },
+                    { name: "Protein fruit smoothie", emoji: "🥤", calories: 420, allergens: ["dairy"] }
+                ],
+                lunch: [
+                    { name: "Chicken rice with vegetables", emoji: "🍛", calories: 680, allergens: [] },
+                    { name: "Whole wheat pasta with meat", emoji: "🍝", calories: 720, allergens: ["gluten"] },
+                    { name: "Healthy chicken burger", emoji: "🍔", calories: 650, allergens: ["gluten"] },
+                    { name: "Couscous with vegetables and meat", emoji: "🍲", calories: 620, allergens: ["gluten"] }
+                ],
+                snack: [
+                    { name: "Banana with peanut butter", emoji: "🍌", calories: 280, allergens: ["nuts"] },
+                    { name: "Mixed nuts", emoji: "🥜", calories: 320, allergens: ["nuts"] },
+                    { name: "Stuffed dates with almonds", emoji: "🌰", calories: 250, allergens: ["nuts"] },
+                    { name: "Yogurt with granola", emoji: "🥛", calories: 300, allergens: ["dairy", "gluten"] }
+                ],
+                dinner: [
+                    { name: "Beef with sweet potato", emoji: "🥩", calories: 750, allergens: [] },
+                    { name: "Grilled chicken with brown rice", emoji: "🍗", calories: 680, allergens: [] },
+                    { name: "Fish with quinoa and vegetables", emoji: "🐟", calories: 620, allergens: ["fish"] },
+                    { name: "Vegetable cheese omelet", emoji: "🍳", calories: 580, allergens: ["eggs", "dairy"] }
+                ]
+            },
+            maintain: {
+                breakfast: [
+                    { name: "Avocado toast with eggs", emoji: "🥑", calories: 380, allergens: ["eggs", "gluten"] },
+                    { name: "Oatmeal with blueberries", emoji: "🥣", calories: 350, allergens: ["gluten"] },
+                    { name: "Greek yogurt with honey", emoji: "🥛", calories: 320, allergens: ["dairy"] },
+                    { name: "Vegetable omelet", emoji: "🍳", calories: 300, allergens: ["eggs"] }
+                ],
+                lunch: [
+                    { name: "Mediterranean chicken salad", emoji: "🥗", calories: 520, allergens: [] },
+                    { name: "Chicken vegetable wrap", emoji: "🌯", calories: 480, allergens: ["gluten"] },
+                    { name: "Lentil soup with salad", emoji: "🍲", calories: 450, allergens: [] },
+                    { name: "Healthy tuna sandwich", emoji: "🥪", calories: 420, allergens: ["fish", "gluten"] }
+                ],
+                snack: [
+                    { name: "Apple with cheese", emoji: "🍎", calories: 180, allergens: ["dairy"] },
+                    { name: "Hummus with vegetables", emoji: "🥕", calories: 160, allergens: [] },
+                    { name: "Roasted almonds", emoji: "🥜", calories: 200, allergens: ["nuts"] },
+                    { name: "Yogurt with fruits", emoji: "🥛", calories: 150, allergens: ["dairy"] }
+                ],
+                dinner: [
+                    { name: "Grilled fish with vegetables", emoji: "🐟", calories: 580, allergens: ["fish"] },
+                    { name: "Chicken with brown rice", emoji: "🍗", calories: 620, allergens: [] },
+                    { name: "Whole wheat pasta", emoji: "🍝", calories: 550, allergens: ["gluten"] },
+                    { name: "Grilled vegetables with quinoa", emoji: "🥘", calories: 480, allergens: [] }
+                ]
+            },
+            muscle: {
+                breakfast: [
+                    { name: "High protein pancakes", emoji: "🥞", calories: 550, allergens: ["eggs", "dairy", "gluten"] },
+                    { name: "Scrambled eggs with avocado", emoji: "🍳", calories: 480, allergens: ["eggs"] },
+                    { name: "Protein oatmeal with banana", emoji: "🥣", calories: 420, allergens: ["dairy", "gluten"] },
+                    { name: "Green protein smoothie", emoji: "🥤", calories: 380, allergens: ["dairy"] }
+                ],
+                lunch: [
+                    { name: "Grilled chicken with quinoa", emoji: "🍗", calories: 650, allergens: [] },
+                    { name: "Protein tuna salad", emoji: "🥗", calories: 580, allergens: ["fish"] },
+                    { name: "Beef with vegetables", emoji: "🥩", calories: 720, allergens: [] },
+                    { name: "Salmon with rice", emoji: "🐟", calories: 620, allergens: ["fish"] }
+                ],
+                snack: [
+                    { name: "Protein shake with banana", emoji: "🥤", calories: 300, allergens: ["dairy"] },
+                    { name: "Almonds with cottage cheese", emoji: "🥜", calories: 280, allergens: ["nuts", "dairy"] },
+                    { name: "Boiled eggs with avocado", emoji: "🥚", calories: 250, allergens: ["eggs"] },
+                    { name: "Greek yogurt with nuts", emoji: "🥛", calories: 320, allergens: ["dairy", "nuts"] }
+                ],
+                dinner: [
+                    { name: "Beef steak with sweet potato", emoji: "🥩", calories: 780, allergens: [] },
+                    { name: "Grilled chicken with vegetables", emoji: "🍗", calories: 680, allergens: [] },
+                    { name: "Fish with quinoa and broccoli", emoji: "🐟", calories: 650, allergens: ["fish"] },
+                    { name: "Protein vegetable omelet", emoji: "🍳", calories: 580, allergens: ["eggs"] }
+                ]
+            }
+        };
+
+        // Function to calculate BMR (Basal Metabolic Rate) - using average formula
+        function calculateBMR(weight, height, age) {
+            // Using Mifflin-St Jeor equation average for both genders
+            return 10 * weight + 6.25 * height - 5 * age + 5;
+        }
+
+        // Function to calculate daily calorie needs
+        function calculateDailyCalories(bmr, activityLevel, goal) {
+            const activityMultipliers = {
+                sedentary: 1.2,
+                light: 1.375,
+                moderate: 1.55,
+                active: 1.725
+            };
+
+            const baseCalories = bmr * activityMultipliers[activityLevel];
+
+            const goalAdjustments = {
+                lose: -500,
+                maintain: 0,
+                gain: 500,
+                muscle: 300
+            };
+
+            return Math.round(baseCalories + goalAdjustments[goal]);
+        }
+
+        // Function to filter meals based on allergies
+        function filterMealsByAllergies(meals, userAllergies) {
+            if (!userAllergies || userAllergies.length === 0) {
+                return meals;
+            }
+            
+            return meals.filter(meal => {
+                return !meal.allergens.some(allergen => 
+                    userAllergies.some(userAllergy => 
+                        allergen.toLowerCase().includes(userAllergy.toLowerCase()) ||
+                        userAllergy.toLowerCase().includes(allergen.toLowerCase())
+                    )
+                );
+            });
+        }
+
+        // Function to generate random meal plan
+        function generateMealPlan(goal, dailyCalories, userAllergies = []) {
+            const meals = mealDatabase[goal];
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const dayEmojis = ['🌟', '💨', '🧘', '💪', '🏃', '🦵', '🌿'];
+            
+            let mealPlan = '';
+            
+            days.forEach((day, index) => {
+                // Filter meals based on allergies
+                const filteredBreakfast = filterMealsByAllergies(meals.breakfast, userAllergies);
+                const filteredLunch = filterMealsByAllergies(meals.lunch, userAllergies);
+                const filteredSnack = filterMealsByAllergies(meals.snack, userAllergies);
+                const filteredDinner = filterMealsByAllergies(meals.dinner, userAllergies);
+                
+                // Select random meals from filtered options
+                const breakfast = filteredBreakfast.length > 0 ? 
+                    filteredBreakfast[Math.floor(Math.random() * filteredBreakfast.length)] :
+                    { name: "Custom meal needed", emoji: "🍽️", calories: 300 };
+                    
+                const lunch = filteredLunch.length > 0 ? 
+                    filteredLunch[Math.floor(Math.random() * filteredLunch.length)] :
+                    { name: "Custom meal needed", emoji: "🍽️", calories: 500 };
+                    
+                const snack = filteredSnack.length > 0 ? 
+                    filteredSnack[Math.floor(Math.random() * filteredSnack.length)] :
+                    { name: "Custom snack needed", emoji: "🍽️", calories: 150 };
+                    
+                const dinner = filteredDinner.length > 0 ? 
+                    filteredDinner[Math.floor(Math.random() * filteredDinner.length)] :
+                    { name: "Custom meal needed", emoji: "🍽️", calories: 600 };
+                
+                const totalCalories = breakfast.calories + lunch.calories + snack.calories + dinner.calories;
+                
+                mealPlan += `
+                    <div class="meal-card bg-white rounded-xl border-2 border-gray-100 p-4">
+                        <h4 class="font-bold text-gray-800 mb-3">${dayEmojis[index]} ${day}</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-2 bg-yellow-50 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <span>${breakfast.emoji}</span>
+                                    <span class="text-sm font-medium">Breakfast: ${breakfast.name}</span>
+                                </div>
+                                <span class="text-xs text-gray-600">${breakfast.calories} cal</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <span>${lunch.emoji}</span>
+                                    <span class="text-sm font-medium">Lunch: ${lunch.name}</span>
+                                </div>
+                                <span class="text-xs text-gray-600">${lunch.calories} cal</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <span>${snack.emoji}</span>
+                                    <span class="text-sm font-medium">Snack: ${snack.name}</span>
+                                </div>
+                                <span class="text-xs text-gray-600">${snack.calories} cal</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-orange-50 rounded-lg">
+                                <div class="flex items-center space-x-2">
+                                    <span>${dinner.emoji}</span>
+                                    <span class="text-sm font-medium">Dinner: ${dinner.name}</span>
+                                </div>
+                                <span class="text-xs text-gray-600">${dinner.calories} cal</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-center text-sm font-semibold text-gray-700">
+                            Total: ${totalCalories} calories
+                        </div>
+                    </div>
+                `;
+            });
+            
+            return mealPlan;
+        }
+
+        // Main function to generate personalized plan
+        function generatePersonalizedPlan() {
+            // Get form data
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseInt(document.getElementById('weight').value);
+            const height = parseInt(document.getElementById('height').value);
+            const activity = document.getElementById('activity').value;
+            const goal = document.getElementById('goal').value;
+            const allergiesInput = document.getElementById('allergies').value;
+
+            // Validate inputs
+            if (!age || !weight || !height) {
+                alert('Please fill in all required fields (Age, Weight, Height)');
+                return;
+            }
+
+            // Process allergies
+            const userAllergies = allergiesInput ? 
+                allergiesInput.split(',').map(allergy => allergy.trim().toLowerCase()) : [];
+
+            // Show loading
+            document.getElementById('loadingMessage').classList.remove('hidden');
+            document.getElementById('generatePlan').disabled = true;
+
+            // Simulate API call delay
+            setTimeout(() => {
+                // Calculate nutritional needs
+                const bmr = calculateBMR(weight, height, age);
+                const dailyCalories = calculateDailyCalories(bmr, activity, goal);
+                const protein = Math.round(weight * (goal === 'muscle' ? 2.2 : goal === 'lose' ? 1.6 : 1.8));
+                const water = Math.round(weight * 0.035);
+
+                // Generate workout recommendations
+                const workoutRec = generateWorkouts(goal, activity, age, weight);
+
+                // Update nutrition goals
+                document.getElementById('targetCalories').textContent = dailyCalories;
+                document.getElementById('targetProtein').textContent = protein + 'g';
+                document.getElementById('targetWater').textContent = Math.min(water, 12);
+
+                // Show workout recommendation
+                document.getElementById('workoutRecommendation').classList.remove('hidden');
+                document.getElementById('workoutAdvice').textContent = workoutRec.recommendation;
+
+                // Generate meal plan with allergy filtering
+                const mealPlan = generateMealPlan(goal, dailyCalories, userAllergies);
+                
+                // Update meal plans container
+                document.getElementById('mealPlansContainer').innerHTML = mealPlan;
+
+                // Hide loading
+                document.getElementById('loadingMessage').classList.add('hidden');
+                document.getElementById('generatePlan').disabled = false;
+
+                // Show success message
+                let successMessage = '🎉 Your personalized plan has been generated successfully!';
+                if (userAllergies.length > 0) {
+                    successMessage += ` Meals have been filtered to avoid: ${userAllergies.join(', ')}`;
+                }
+                alert(successMessage);
+
+                // Scroll to results
+                document.getElementById('mealPlansContainer').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+
+            }, 2000); // 2 second delay to simulate backend processing
+        }
+
+        // Add event listener to generate plan button
+        document.getElementById('generatePlan').addEventListener('click', generatePersonalizedPlan);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968f430613a75cd1',t:'MTc1NDE1NTM5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
