@@ -4,38 +4,66 @@
     <meta charset="UTF-8">
     <title>Sign Up</title>
     <link rel="stylesheet" th:href="@{/LAMA.css}">
+    <style>
+        .logo-img {
+            width: 150px;
+            height: auto;
+        }
+        h1 {
+            background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        button {
+            background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .login-link a {
+            background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .error-msg p {
+            color: #613849;
+        }
+    </style>
 </head>
 <body>
 <div class="main-box">
-    <img th:src="@{/images/skyGym.png}" alt="Sky Gym Logo" class="logo-img">
+    <img th:src="@{/images/nutrifit.png}" alt="NutriFit Logo" class="logo-img">
     <h1>Sign Up</h1>
-
     <form action="/signup" method="post">
         <label>Name:</label>
         <input type="text" name="name" required />
-
         <label>Email:</label>
         <input type="email" name="email" required />
-
         <label>Password:</label>
         <input type="password" name="password" required />
-
-      <label>Role:</label>
-<div class="radio-group">
-    <label><input type="radio" name="role" value="staff" required /> Staff</label>
-    <label><input type="radio" name="role" value="gym_member" /> Gym Member</label>
-</div>
-
-
+        <label>Role:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="role" value="staff" required /> Staff</label>
+            <label><input type="radio" name="role" value="gym_member" /> Gym Member</label>
+        </div>
         <button type="submit">Next</button>
     </form>
-
-   <p class="login-link">
-    Already have an account? 
-    <a th:href="@{/login}" class="fancy-button">Login here</a>
-</p>
-
-    <div th:if="${error}" style="color: blue;">
+    <p class="login-link">
+        Already have an account? 
+        <a th:href="@{/login}" class="fancy-button">Login here</a>
+    </p>
+    <div th:if="${error}" class="error-msg">
         <p th:text="${error}"></p>
     </div>
 </div>

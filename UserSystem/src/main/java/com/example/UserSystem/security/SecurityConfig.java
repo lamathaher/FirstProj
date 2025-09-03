@@ -33,7 +33,6 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    // ❗ بدون تشفير مؤقتًا (مش للإنتاج)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -44,7 +43,6 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ✅ نجاح تسجيل الدخول بناء على الدور
     @Bean
     public AuthenticationSuccessHandler customSuccessHandler() {
         return new AuthenticationSuccessHandler() {
@@ -67,18 +65,18 @@ public class SecurityConfig {
     @Bean
     public ITemplateResolver templateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("templates/"); // مجلد القوالب
+        templateResolver.setPrefix("templates/"); 
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode("HTML");
         templateResolver.setCharacterEncoding("UTF-8");
-        templateResolver.setCacheable(false); // مهم أثناء التطوير
+        templateResolver.setCacheable(false); 
         return templateResolver;
     }
     @Bean
     public SpringTemplateEngine templateEngine() {
         SpringTemplateEngine engine = new SpringTemplateEngine();
         engine.setTemplateResolver(templateResolver());
-        engine.addDialect(new SpringSecurityDialect()); // 👈 مهم
+        engine.addDialect(new SpringSecurityDialect()); 
         return engine;
     }
 
@@ -89,7 +87,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/register", "/signup", "/login", "/style22.css", "/LAMA.css",
                              "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-            .requestMatchers("/staff/edit-meals").hasRole("staff")   // edit-meals لموظفي staff
+            .requestMatchers("/staff/edit-meals").hasRole("staff")   
             .requestMatchers("/staff/**", "/coach-dashboard/**").hasRole("staff")
             .requestMatchers("/dashboard", "/success", "/profile-setup").hasRole("gym_member")
             .requestMatchers("/users/**").hasRole("staff")

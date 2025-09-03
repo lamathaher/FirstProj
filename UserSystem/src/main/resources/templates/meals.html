@@ -59,7 +59,7 @@
             <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L9 6l8.24 8.24z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <path d="M16.95 7.05a6 6 0 0 0-8.48 8.48L4 20l4.47-4.47a6 6 0 0 0 8.48-8.48z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          <h1 class="text-xl font-bold">SkyGym</h1>
+          <h1 class="text-xl font-bold">NutriFit</h1>
         </div>
 
         <nav class="flex items-center space-x-6">
@@ -96,7 +96,6 @@
         Calories: 350 kcal<br>Protein: 30g<br>Carbs: 10g<br>Fat: 12g
       </div>
 
-      <!-- زر الأرشيف يظهر فقط للمستخدمين بـ role staff -->
       <div sec:authorize="hasRole('staff')">
         <button class="archive-btn absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 z-10">
           Archive
@@ -119,7 +118,6 @@
       </div>
     </div>
 
-    <!-- بقية الكاردات بنفس الطريقة -->
     <div class="meal-card relative bg-white rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105" data-category="high-protein">
       <img th:src="@{/images/chicken.png}" alt="Chicken Tinga" class="w-full h-48 object-cover" />
       <div class="p-4 text-center font-semibold text-lg">Chicken Tinga</div>

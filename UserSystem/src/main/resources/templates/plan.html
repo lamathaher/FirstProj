@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyGym - Weekly Fitness & Nutrition Plan</title>
+    <title>NutriFit - Weekly Fitness & Nutrition Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== FONT IMPORT ===== */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
-        /* ===== GLOBAL STYLES ===== */
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1a2c47, #2e4365, #613849);
             min-height: 100vh;
         }
         
-        /* ===== ANIMATED DIVIDER ===== */
         .animated-divider {
             background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
             background-size: 200% 200%;
@@ -30,12 +27,10 @@
             100% { background-position: 0% 50%; }
         }
         
-        /* ===== PROGRESS BAR ANIMATIONS ===== */
         .progress-bar {
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* ===== CARD HOVER EFFECTS ===== */
         .workout-card, .meal-card {
             transition: all 0.3s ease;
         }
@@ -45,7 +40,6 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
-        /* ===== CHECKBOX ANIMATIONS ===== */
         .custom-checkbox {
             appearance: none;
             width: 20px;
@@ -73,14 +67,12 @@
             font-weight: bold;
         }
         
-        /* ===== SECTION HEADERS ===== */
         .section-header {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
             .split-container {
                 flex-direction: column;
@@ -93,18 +85,15 @@
     </style>
 </head>
 <body>
-    <!-- ===== MAIN CONTAINER ===== -->
     <div class="min-h-screen p-4">
-        <!-- ===== PAGE HEADER ===== -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-white mb-2">
                 <i class="fas fa-dumbbell mr-3"></i>
-                SkyGym Weekly Plan
+                Personalized Weekly Plan
             </h1>
             <p class="text-white/80 text-lg">Your personalized fitness and nutrition journey</p>
         </div>
 
-        <!-- ===== USER INPUT FORM ===== -->
         <div class="max-w-4xl mx-auto mb-8">
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">
@@ -173,10 +162,8 @@
             </div>
         </div>
 
-        <!-- ===== SPLIT SCREEN CONTAINER ===== -->
         <div class="split-container flex gap-4 max-w-7xl mx-auto">
             
-            <!-- ===== 🏋️ WORKOUTS SECTION (LEFT SIDE) ===== -->
             <div class="flex-1 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl">
                 <!-- Workouts Header -->
                 <div class="section-header rounded-xl p-4 mb-6">
@@ -205,13 +192,11 @@
                     </div>
                 </div>
 
-                <!-- Workout Recommendation -->
                 <div id="workoutRecommendation" class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 mb-6 hidden">
                     <h3 class="font-semibold text-gray-800 mb-2">💡 Your Workout Recommendation</h3>
                     <p id="workoutAdvice" class="text-sm text-gray-700"></p>
                 </div>
 
-                <!-- 7 Days of Workouts -->
                 <div class="space-y-4">
                     <!-- SUNDAY: Full Body -->
                     <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
@@ -248,7 +233,6 @@
                         </div>
                     </div>
 
-                    <!-- MONDAY: Cardio + Stretching -->
                     <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-bold text-gray-800">💨 Monday - Cardio + Stretching</h4>
@@ -279,7 +263,6 @@
                         </div>
                     </div>
 
-                    <!-- TUESDAY: Rest/Light Yoga -->
                     <div class="workout-card bg-white rounded-xl border-2 border-gray-100 p-4">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-bold text-gray-800">🧘 Tuesday - Rest/Light Yoga</h4>
@@ -952,7 +935,6 @@
             return mealPlan;
         }
 
-        // Main function to generate personalized plan
         function generatePersonalizedPlan() {
             // Get form data
             const age = parseInt(document.getElementById('age').value);
@@ -978,7 +960,6 @@
 
             // Simulate API call delay
             setTimeout(() => {
-                // Calculate nutritional needs
                 const bmr = calculateBMR(weight, height, age);
                 const dailyCalories = calculateDailyCalories(bmr, activity, goal);
                 const protein = Math.round(weight * (goal === 'muscle' ? 2.2 : goal === 'lose' ? 1.6 : 1.8));
@@ -996,24 +977,19 @@
                 document.getElementById('workoutRecommendation').classList.remove('hidden');
                 document.getElementById('workoutAdvice').textContent = workoutRec.recommendation;
 
-                // Generate meal plan with allergy filtering
                 const mealPlan = generateMealPlan(goal, dailyCalories, userAllergies);
                 
-                // Update meal plans container
                 document.getElementById('mealPlansContainer').innerHTML = mealPlan;
 
-                // Hide loading
                 document.getElementById('loadingMessage').classList.add('hidden');
                 document.getElementById('generatePlan').disabled = false;
 
-                // Show success message
                 let successMessage = '🎉 Your personalized plan has been generated successfully!';
                 if (userAllergies.length > 0) {
                     successMessage += ` Meals have been filtered to avoid: ${userAllergies.join(', ')}`;
                 }
                 alert(successMessage);
 
-                // Scroll to results
                 document.getElementById('mealPlansContainer').scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'start' 

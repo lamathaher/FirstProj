@@ -183,17 +183,22 @@
   font-size: 1rem;
   cursor: pointer;
 }
+.reminder-card {
+  margin-top: 3rem; /* pushes it down below the two forms */
+}
+
   
     </style>
 </head>
 <header>
 <div class="controls">
   <button id="back-btn" aria-label="Go back">
-    <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" style="margin-right:6px; vertical-align:middle;">
-      <path fill="currentColor" d="M9.7 4.3a1 1 0 0 0-1.4 1.4L11.58 9H4a1 1 0 1 0 0 2h7.58l-3.28 3.28a1 1 0 1 0 1.44 1.4l5-5a1 1 0 0 0 0-1.4l-5-5z"/>
-    </svg>
-    Back
-  </button>
+  <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true" style="margin-right:6px; vertical-align:middle;">
+    <path fill="currentColor" d="M15 10a1 1 0 0 1-1 1H7.41l3.3 3.3a1 1 0 0 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.42 1.4L7.4 9H14a1 1 0 0 1 1 1z"/>
+  </svg>
+  Back
+</button>
+
 </div>
 </header>
 <body>
@@ -202,7 +207,7 @@
         <nav class="nav">
             <div class="nav-brand">
                 <i class="fas fa-dumbbell icon" style="color: #3b82f6;"></i>
-                SkyGym Admin
+               NutriFit Content Admin
             </div>
             <div class="nav-links">
                 <a href="/meals" class="font-medium hover:text-gray-200 transition">
@@ -360,34 +365,33 @@
 
             </div>
         </div>
-      <!-- Add New Reminder Form -->
-<div class="form-card">
-  <div class="form-header">
-    <h1>
-      <i class="fas fa-bell icon" style="color: #f59e0b;"></i>
-      Add New Reminder
-    </h1>
-    <p>Create a motivational reminder for members</p>
-  </div>
-
-  <form id="reminder-form">
-    <div class="form-group">
-      <label for="reminderText">
-        <i class="fas fa-sticky-note icon" style="color: #3b82f6;"></i>
-        Reminder Text
-      </label>
-      <input type="text" id="reminderText" placeholder="e.g. Drink water 💧" required />
+      <!-- Add Reminder Form -->
+<div class="form-card reminder-card" style="grid-column: 1 / -1;">
+    <div class="form-header">
+        <h1>
+            <i class="fas fa-bell icon" style="color: #f59e0b;"></i>
+            Add New Reminder
+        </h1>
+        <p>Create a motivational reminder for members</p>
     </div>
 
-    <button type="submit" class="submit-btn">
-      <i class="fas fa-plus icon"></i>
-      Add Reminder
-    </button>
-  </form>
+    <form id="reminder-form">
+        <div class="form-group">
+            <label for="reminderText">
+                <i class="fas fa-sticky-note icon" style="color: #3b82f6;"></i>
+                Reminder Text
+            </label>
+            <input type="text" id="reminderText" placeholder="e.g. Drink water 💧" required />
+        </div>
+
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-plus icon"></i>
+            Add Reminder
+        </button>
+    </form>
 </div>
 
-        
-    </div>
+</div>
 
     <script>
         // Add form validation and animations
@@ -440,7 +444,6 @@
             if (history.length > 1) {
               history.back();
             } else {
-              // fallback لو ما في تاريخ رجعة
               window.location.href = "/";
             }
           });
@@ -454,21 +457,19 @@
           const newReminder = input.value.trim();
 
           if (!newReminder) {
-            alert("اكتب الريمايندر أولاً!");
+            alert("ًwrite reminder first");
             return;
           }
 
-          // جلب الريمايندرز المضافة من اليوزر فقط
           const savedReminders = JSON.parse(localStorage.getItem("reminders") || "[]");
 
-          // إضافة الجديد
           savedReminders.push(newReminder);
 
-          // حفظ بالـ localStorage
           localStorage.setItem("reminders", JSON.stringify(savedReminders));
 
           input.value = "";
-          alert("تمت إضافة الريمايندر بنجاح!");
+          alert("reminder has been added succesfully!");
+          //🌿 Step outside for fresh air — a quick reset for your mind.
         });
       </script>
 

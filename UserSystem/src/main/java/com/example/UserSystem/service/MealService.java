@@ -46,11 +46,20 @@ public class MealService {
     }
 
     // ✅ أضف وجبة جديدة
+ // ✅ أضف وجبة جديدة بدون تكرار
     public void addMeal(Meal meal) {
         List<Meal> meals = readMealsFromFile();
-        meals.add(meal);
-        writeMealsToFile(meals);
+
+        // شيل المكررين: خزن فقط إذا ما في وجبة بنفس الاسم
+        boolean exists = meals.stream()
+                .anyMatch(m -> m.getName().equalsIgnoreCase(meal.getName()));
+
+        if (!exists) {
+            meals.add(meal);
+            writeMealsToFile(meals);
+        }
     }
+
 
     // ✅ أرشفة وجبة مضافة (فقط من الملف، مو الثابتة)
     public void archiveMeal(String mealName) {

@@ -29,7 +29,6 @@ public class staffController {
         return "coach-dashboard";
     }
 
-    // === هنا التعديل ===
     @GetMapping("/review")
     public String review() {
         return "review"; // يطابق templates/review.html
